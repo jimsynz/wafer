@@ -1,11 +1,12 @@
-defmodule ChipHop.MixProject do
+defmodule Wafer.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :chip_hop,
+      app: :wafer,
       version: "0.1.0",
       elixir: "~> 1.9",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -15,15 +16,21 @@ defmodule ChipHop.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ChipHop.Application, []}
+      mod: {Wafer.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:mimic, "~> 1.1", only: :test},
+      {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
+      {:elixir_ale, "~> 1.2", only: :dev},
+      {:circuits_i2c, "~> 0.3", only: :dev},
+      {:circuits_gpio, "~> 0.4", only: :dev}
     ]
   end
+
+  defp elixirc_paths(:test), do: ["test/support" | elixirc_paths(nil)]
+  defp elixirc_paths(_), do: ["lib"]
 end
