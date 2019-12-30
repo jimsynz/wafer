@@ -65,6 +65,10 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
 
     test "disabling rising interrupts" do
       conn = conn()
+
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       Dispatcher.handle_call({:enable, conn, :rising, self()}, nil, state())
 
       assert {:reply, {:ok, conn}, _state} =
@@ -75,6 +79,10 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
 
     test "disabling falling interrupts" do
       conn = conn()
+
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       Dispatcher.handle_call({:enable, conn, :falling, self()}, nil, state())
 
       assert {:reply, {:ok, conn}, _state} =
@@ -85,6 +93,10 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
 
     test "disabling both interrupts" do
       conn = conn()
+
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       Dispatcher.handle_call({:enable, conn, :both, self()}, nil, state())
 
       assert {:reply, {:ok, conn}, _state} =
@@ -97,6 +109,9 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
 
   describe "handle_info/2" do
     test "publishing interrupts when the value was previously unknown" do
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       {:reply, {:ok, conn}, state} =
         Dispatcher.handle_call({:enable, conn(), :both, self()}, nil, state())
 
@@ -106,6 +121,9 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
     end
 
     test "publishing interrupts when the value rises" do
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       state = state(values: %{1 => 0})
 
       {:reply, {:ok, conn}, state} =
@@ -117,6 +135,9 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
     end
 
     test "publishing interrupts when the value falls" do
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       state = state(values: %{1 => 1})
 
       {:reply, {:ok, conn}, state} =
@@ -128,6 +149,9 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
     end
 
     test "ignoring interrupts when the value stays high" do
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       state = state(values: %{1 => 1})
 
       {:reply, {:ok, _conn}, state} =
@@ -139,6 +163,9 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
     end
 
     test "ignoring interrupts when the value stays low" do
+      Driver
+      |> stub(:set_interrupts, fn _, _ -> :ok end)
+
       state = state(values: %{1 => 0})
 
       {:reply, {:ok, _conn}, state} =

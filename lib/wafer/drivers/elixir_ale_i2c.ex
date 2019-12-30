@@ -83,7 +83,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALEI2C do
 
   def read(%{pid: pid}, bytes, options \\ [])
       when is_pid(pid) and is_byte_size(bytes) and is_list(options) do
-    case Driver.read(pid, bytes, options) do
+    case Driver.read(pid, bytes) do
       data when is_binary(data) -> {:ok, data}
       {:error, reason} -> {:error, reason}
     end
@@ -91,7 +91,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALEI2C do
 
   def write(%{pid: pid} = conn, data, options \\ [])
       when is_pid(pid) and is_binary(data) and is_list(options) do
-    case Driver.write(pid, data, options) do
+    case Driver.write(pid, data) do
       :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
     end
@@ -99,7 +99,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALEI2C do
 
   def write_read(%{pid: pid} = conn, data, bytes, options \\ [])
       when is_pid(pid) and is_binary(data) and is_byte_size(bytes) and is_list(options) do
-    case Driver.write_read(pid, data, bytes, options) do
+    case Driver.write_read(pid, data, bytes) do
       data when is_binary(data) -> {:ok, data, conn}
       {:error, reason} -> {:error, reason}
     end

@@ -6,6 +6,43 @@ Wafer provides Elixir protocols for interacting with device registers and dealin
 
 Wafer implements the [GPIO](https://hexdocs.pm/wafer/Wafer.GPIOProto.html) and [Chip](https://hexdocs.pm/wafer/Wafer.Chip.html) protocols for [ElixirALE](https://hex.pm/packages/elixir_ale)'s GPIO and I2C drivers, [Circuits.GPIO](https://hex.pm/packages/circuits_gpio) and [Circuits.I2C](https://hex.pm/packages/circuits_i2c).  Implementing it for SPI should also be trivial, I just don't have any SPI devices to test with at the moment.
 
+## Working with registers
+
+Wafer provides the very helpful [Registers](https://hexdocs.pm/wafer/Wafer.Registers.html) macros which allow you to quickly and easily define your registers for your device:
+
+Here's a very simple example:
+
+```elixir
+defmodule HTS221.Registers do
+  use Wafer.Registers
+
+  defregister(:ctrl_reg1, 0x20, :rw, 1)
+  defregister(:humidity_out_l, 0x28, :ro, 1)
+  defregister(:humidity_out_h, 0x29, :ro, 1)
+end
+
+defmodule HTS221 do
+  import HTS221.Registers
+  use Bitwise
+
+  def humidity(conn) do
+    with {:ok, <<msb>>} <- read_humidity_out_h(conn),
+         {:ok, <<lsb>} <- read_humidity_out_l(conn),
+         do: {:ok, msb <<< 8 + lsb}
+  end
+
+  def on?(conn) do
+    case read_ctrl_reg1(conn) do
+      {:ok, <<1::integer-size(1), _::bits>>} -> true
+      _ -> false
+    end
+  end
+
+  def turn_on(conn), do: write_ctrl_reg1(conn, <<1::integer-size(1), 0::integer-size(7)>>)
+  def turn_off(conn), do: write_ctrl_reg1(conn, <<0>>)
+end
+```
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed

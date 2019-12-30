@@ -12,7 +12,7 @@ defmodule WaferDriverCircuitsGPIOTest do
       Driver
       |> expect(:open, 1, fn pin, direction, opts ->
         assert pin == 1
-        assert direction == :out
+        assert direction == :output
         assert opts == []
         {:ok, :erlang.make_ref()}
       end)
@@ -132,5 +132,7 @@ defmodule WaferDriverCircuitsGPIOTest do
     end
   end
 
-  defp conn, do: %Subject{ref: :erlang.make_ref(), pin: 1, direction: :out}
+  defp conn(opts \\ []), do: struct(%Subject{pin: pin(), ref: :erlang.make_ref()}, opts)
+
+  defp pin, do: 1
 end

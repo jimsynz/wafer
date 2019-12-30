@@ -140,10 +140,9 @@ defmodule WaferElixirALEI2CTest do
       conn = conn()
 
       Driver
-      |> expect(:read, 1, fn pid, bytes, opts ->
+      |> expect(:read, 1, fn pid, bytes ->
         assert pid == conn.pid
         assert bytes == 2
-        assert opts == []
         <<0, 0>>
       end)
 
@@ -156,10 +155,9 @@ defmodule WaferElixirALEI2CTest do
       conn = conn()
 
       Driver
-      |> expect(:write, 1, fn pid, data, opts ->
+      |> expect(:write, 1, fn pid, data ->
         assert pid == conn.pid
         assert data == <<0, 0>>
-        assert opts == []
         :ok
       end)
 
@@ -172,11 +170,10 @@ defmodule WaferElixirALEI2CTest do
       conn = conn()
 
       Driver
-      |> expect(:write_read, 1, fn pid, data, bytes, opts ->
+      |> expect(:write_read, 1, fn pid, data, bytes ->
         assert pid == conn.pid
         assert data == <<1>>
         assert bytes == 2
-        assert opts == []
 
         <<0, 0>>
       end)

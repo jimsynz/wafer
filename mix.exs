@@ -26,13 +26,20 @@ defmodule Wafer.MixProject do
     [
       {:mimic, "~> 1.1", only: :test},
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:elixir_ale, "~> 1.2", only: :dev, optional: true},
-      {:circuits_i2c, "~> 0.3", only: :dev, optional: true},
-      {:circuits_gpio, "~> 0.4", only: :dev, optional: true},
-      {:circuits_spi, "~> 0.1", only: :dev, optional: true}
+      {:elixir_ale, "~> 1.2", optional: true},
+      {:circuits_i2c, "~> 0.3", optional: true},
+      {:circuits_gpio, "~> 0.4", optional: true},
+      {:circuits_spi, "~> 0.1", optional: true}
     ]
   end
 
-  defp elixirc_paths(:test), do: ["test/support" | elixirc_paths(nil)]
+  # Load fake versions of the Circuits and ElixirALE modules unless explicitly
+  # told not to.
+  defp elixirc_paths(:test) do
+    if System.get_env("FAKE_DRIVERS") == "false",
+      do: elixirc_paths(nil),
+      else: ["test/support" | elixirc_paths(nil)]
+  end
+
   defp elixirc_paths(_), do: ["lib"]
 end

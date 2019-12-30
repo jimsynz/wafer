@@ -138,7 +138,7 @@ defmodule WaferRegistersTest do
   end
 
   defp test_mod do
-    mod = TestUtils.random_module_name()
+    mod = random_module_name()
 
     defmodule mod do
       use Wafer.Registers
@@ -149,5 +149,14 @@ defmodule WaferRegistersTest do
     end
 
     mod
+  end
+
+  defp random_module_name do
+    name =
+      16
+      |> :crypto.strong_rand_bytes()
+      |> Base.encode64(padding: false)
+
+    Module.concat(__MODULE__, name)
   end
 end

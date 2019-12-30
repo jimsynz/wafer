@@ -7,7 +7,7 @@ defmodule Circuits.GPIO do
       do: :ok
 
   def open(pin_number, pin_direction, options \\ [])
-      when is_pin_number(pin_number) and is_pin_direction(pin_direction) and is_list(options),
+      when is_pin_number(pin_number) and pin_direction in ~w[input output]a and is_list(options),
       do: {:ok, :erlang.make_ref()}
 
   def close(ref) when is_reference(ref), do: :ok

@@ -26,7 +26,8 @@ defmodule Wafer.Driver.CircuitsGPIO do
   def acquire(opts) when is_list(opts) do
     with pin when is_pin_number(pin) <- Keyword.get(opts, :pin),
          direction when is_pin_direction(direction) <- Keyword.get(opts, :direction, :out),
-         {:ok, ref} <- Driver.open(pin, direction, Keyword.drop(opts, ~w[pin direction]a)) do
+         pin_dir <- String.to_atom(Enum.join([direction, "put"], "")),
+         {:ok, ref} <- Driver.open(pin, pin_dir, Keyword.drop(opts, ~w[pin direction]a)) do
       {:ok, %__MODULE__{ref: ref, pin: pin, direction: direction}}
     else
       :error -> {:error, "Circuits.GPIO requires a `pin` option."}

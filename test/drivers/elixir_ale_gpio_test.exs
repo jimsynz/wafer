@@ -106,5 +106,6 @@ defmodule WaferDriverElixirALEGPIOTest do
     end
   end
 
-  defp conn, do: %Subject{pid: self(), pin: 1, direction: :out}
+  defp conn(opts \\ []), do: struct(%Subject{pin: pin(), pid: self()}, opts)
+  defp pin, do: 1
 end
