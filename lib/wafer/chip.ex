@@ -6,7 +6,6 @@ defprotocol Wafer.Chip do
   written to.
   """
 
-  @type i2c_address :: 0..0x7F
   @type register_address :: non_neg_integer
   @type bytes :: non_neg_integer
 
@@ -21,7 +20,7 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirAleI2C.acquire(bus: "i2c-1", address: 0x68)
+      iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c-1", address: 0x68)
       ...> Chip.read_register(conn, 0, 1)
       {:ok, <<0>>}
   """
@@ -40,12 +39,12 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirAleI2C.acquire(bus: "i2c", address: 0x68)
+      iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.write_register(conn, 0, <<0>>)
       :ok
   """
   @spec write_register(Conn.t(), register_address, data :: binary) ::
-          :ok | {:error, reason :: any}
+          {:ok, t} | {:error, reason :: any}
   def write_register(conn, register_address, data)
 
   @doc """
@@ -65,11 +64,11 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirAleI2C.acquire(bus: "i2c", address: 0x68)
+      iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.swap_register(conn, 0, <<1>>)
       {:ok, <<0>>}
   """
   @spec swap_register(Conn.t(), register_address, new_data :: binary) ::
-          {:ok, data :: binary} | {:error, reason :: any}
+          {:ok, data :: binary, t} | {:error, reason :: any}
   def swap_register(conn, register_address, new_data)
 end

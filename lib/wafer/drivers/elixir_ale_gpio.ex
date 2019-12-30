@@ -1,4 +1,4 @@
-defmodule Wafer.Driver.ElixirAleGPIO do
+defmodule Wafer.Driver.ElixirALEGPIO do
   defstruct ~w[direction pid pin]a
   @behaviour Wafer.Conn
   alias ElixirALE.GPIO, as: Driver
@@ -11,7 +11,7 @@ defmodule Wafer.Driver.ElixirAleGPIO do
   @type t :: %__MODULE__{pid: pid}
 
   @type options :: [option]
-  @type option :: {:pin, non_neg_integer} | {:direction, GPIO.pin_direction()}
+  @type option :: {:pin, non_neg_integer} | {:direction, GPIO.pin_direction()} | {:force, boolean}
 
   @doc """
   Acquire a connection to the specified GPIO pin using the ElixirALE GPIO driver.
@@ -23,10 +23,10 @@ defmodule Wafer.Driver.ElixirAleGPIO do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with {:ok, pin} <- Keyword.get(opts, :pin),
-         {:ok, direction} <- Keyword.get(opts, :direction, :out),
+    with pin when is_integer(pin) and pin >= 0 <- Keyword.get(opts, :pin),
+         direction when direction in [:in, :out] <- Keyword.get(opts, :direction, :out),
          {:ok, pid} <- Driver.start_link(pin, direction, Keyword.drop(opts, ~w[pin direction]a)) do
-      %__MODULE__{pid: pid}
+      {:ok, %__MODULE__{pid: pid, pin: pin, direction: direction}}
     else
       :error -> {:error, "ElixirALE.GPIO requires a `pin` option."}
       {:error, reason} -> {:error, reason}
@@ -39,12 +39,12 @@ defmodule Wafer.Driver.ElixirAleGPIO do
   Note that other connections may still be using the pin.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%{pid: pid}), do: Driver.release(pid)
+  def release(%__MODULE__{pid: pid}), do: Driver.release(pid)
 end
 
-defimpl Wafer.GPIOProto, for: Wafer.Driver.ElixirAleGPIO do
+defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALEGPIO do
   alias ElixirALE.GPIO, as: Driver
-  alias Wafer.Driver.ElixirAleGPIODispatcher
+  alias Wafer.Driver.ElixirALEGPIODispatcher
 
   def read(%{pid: pid} = _conn) do
     case Driver.read(pid) do
@@ -60,16 +60,13 @@ defimpl Wafer.GPIOProto, for: Wafer.Driver.ElixirAleGPIO do
     end
   end
 
-  def direction(_conn, _direction),
-    do:
-      {:error,
-       "ElixirALE doesn't support direction changing. Restart the connection process with the new direction instead."}
+  def direction(_conn, _direction), do: {:error, :not_supported}
 
-  def enable_interrupt(conn, pin_trigger),
-    do: ElixirAleGPIODispatcher.enable(conn, pin_trigger)
+  def enable_interrupt(conn, pin_condition),
+    do: ElixirALEGPIODispatcher.enable(conn, pin_condition)
 
-  def disable_interrupt(conn, pin_trigger),
-    do: ElixirAleGPIODispatcher.disable(conn, pin_trigger)
+  def disable_interrupt(conn, pin_condition),
+    do: ElixirALEGPIODispatcher.disable(conn, pin_condition)
 
   def pull_mode(_conn, _pull_mode), do: {:error, :not_supported}
 end

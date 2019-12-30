@@ -8,7 +8,7 @@ defmodule Wafer.Application do
   def start(_type, _args) do
     children = [
       {Registry, [keys: :duplicate, name: Wafer.InterruptRegistry]},
-      Wafer.Driver.ElixirAleGPIODispatcher,
+      Wafer.Driver.ElixirALEGPIODispatcher,
       Wafer.Driver.CircuitsGPIODispatcher
     ]
 

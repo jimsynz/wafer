@@ -1,3 +1,4 @@
+# credo:disable-for-this-file
 defmodule Wafer.Registers do
   @moduledoc """
   This module provides helpful macros for specifying the registers used to

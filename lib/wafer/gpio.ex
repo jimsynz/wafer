@@ -1,12 +1,12 @@
-defmodule Wafer.GPIO do
-  alias Wafer.{Conn, GPIOProto, InterruptRegistry}
+defprotocol Wafer.GPIO do
+  alias Wafer.Conn
 
   @moduledoc """
   A `GPIO` is a physical pin which can be read from and written to.
   """
 
   @type pin_direction :: :in | :out
-  @type pin_trigger :: :none | :rising | :falling | :both
+  @type pin_condition :: :none | :rising | :falling | :both
   @type pin_value :: 0 | 1
   @type pull_mode :: :not_set | :none | :pull_up | :pull_down
 
@@ -17,38 +17,42 @@ defmodule Wafer.GPIO do
   Read the current pin value.
   """
   @spec read(Conn.t()) :: {:ok, pin_value, Conn.t()} | {:error, reason :: any}
-  defdelegate read(conn), to: GPIOProto
+  def read(conn)
 
   @doc """
   Set the pin value.
   """
   @spec write(Conn.t(), pin_value) :: {:ok, Conn.t()} | {:error, reason :: any}
-  defdelegate write(conn, pin_value), to: GPIOProto
+  def write(conn, pin_value)
 
   @doc """
   Set the pin direction.
   """
   @spec direction(Conn.t(), pin_direction) :: {:ok, Conn.t()} | {:error, reason :: any}
-  defdelegate direction(conn, pin_direction), to: GPIOProto
+  def direction(conn, pin_direction)
 
   @doc """
-  Enable an interrupt for this pin.
+  Enable an interrupt for this connection and trigger.
 
   Interrupts will be sent to the calling process as messages in the form of
-  `{:interrupt, Conn.t(), pin_value}`.
+  `{:interrupt, Conn.t(), pin_condition}`.
 
   ## Implementors note
 
-  `Wafer` starts it's own `Registry` named `Wafer.InterruptRegistry` which
-  you should publish your interrupts to using the above format.  The registry
-  key is set as follows: `{Conn.t(), pin_trigger}`.
+  `Wafer` starts it's own `Registry` named `Wafer.InterruptRegistry` which you
+  can use to publish your interrupts to using the above format.  The registry
+  key is set as follows: `{PublishingModule, pin, pin_condition}`.  You can see
+  examples in the `CircuitsGPIODispatcher` and `ElixirALEGPIODispatcher`
+  modules.
   """
-  @spec enable_interrupt(Conn.t(), pin_trigger) :: {:ok, Conn.t()} | {:error, reason :: any}
-  def enable_interrupt(conn, pin_trigger) do
-    with {:ok, _pid} <- Registry.register(InterruptRegistry, {conn, pin_trigger}, nil),
-         {:ok, conn} <- GPIOProto.enable_interrupt(conn, pin_trigger),
-         do: {:ok, conn}
-  end
+  @spec enable_interrupt(Conn.t(), pin_condition) :: {:ok, Conn.t()} | {:error, reason :: any}
+  def enable_interrupt(conn, pin_condition)
+
+  @doc """
+  Disables interrupts for this connection and trigger.
+  """
+  @spec disable_interrupt(Conn.t(), pin_condition) :: {:ok, Conn.t()} | {:error, reason :: any}
+  def disable_interrupt(conn, pin_condition)
 
   @doc """
   Set the pull mode for this pin.
@@ -58,5 +62,5 @@ defmodule Wafer.GPIO do
   this function will return `{:error, :not_supported}`.
   """
   @spec pull_mode(Conn.t(), pull_mode) :: {:ok, Conn.t()} | {:error, reason :: any}
-  defdelegate pull_mode(conn, pull_mode), to: GPIOProto
+  def pull_mode(conn, pull_mode)
 end

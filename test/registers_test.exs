@@ -137,7 +137,7 @@ defmodule WaferRegistersTest do
     end
   end
 
-  defp test_mod() do
+  defp test_mod do
     mod = TestUtils.random_module_name()
 
     defmodule mod do

@@ -3,9 +3,10 @@ defmodule Wafer.Driver.CircuitsGPIO do
   @behaviour Wafer.Conn
   alias Circuits.GPIO, as: Driver
   alias Wafer.GPIO
+  import Wafer.Guards
 
   @moduledoc """
-  A connection to a native GPIO pin via Circuit's GPIO driver.
+  A connection to a native GPIO pin via Circuits' GPIO driver.
   """
 
   @type t :: %__MODULE__{ref: reference, pin: non_neg_integer, direction: GPIO.pin_direction()}
@@ -23,10 +24,10 @@ defmodule Wafer.Driver.CircuitsGPIO do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with {:ok, pin} <- Keyword.get(opts, :pin),
-         {:ok, direction} <- Keyword.get(opts, :direction, :out),
+    with pin when is_pin_number(pin) <- Keyword.get(opts, :pin),
+         direction when is_pin_direction(direction) <- Keyword.get(opts, :direction, :out),
          {:ok, ref} <- Driver.open(pin, direction, Keyword.drop(opts, ~w[pin direction]a)) do
-      %__MODULE__{ref: ref, pin: pin, direction: direction}
+      {:ok, %__MODULE__{ref: ref, pin: pin, direction: direction}}
     else
       :error -> {:error, "Circuits.GPIO requires a `pin` option."}
       {:error, reason} -> {:error, reason}
@@ -39,21 +40,22 @@ defmodule Wafer.Driver.CircuitsGPIO do
   Note that other connections may still be using the pin.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%{ref: ref}), do: Driver.close(ref)
+  def release(%__MODULE__{ref: ref}) when is_reference(ref), do: Driver.close(ref)
 end
 
-defimpl Wafer.GPIOProto, for: Wafer.Driver.CircuitsGPIO do
+defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
   alias Wafer.Driver.CircuitsGPIODispatcher
   alias Circuits.GPIO, as: Driver
+  import Wafer.Guards
 
-  def read(%{ref: ref}) do
+  def read(%{ref: ref}) when is_reference(ref) do
     case(Driver.read(ref)) do
-      value when value in [0, 1] -> {:ok, value}
+      value when is_pin_value(value) -> {:ok, value}
       {:error, reason} -> {:error, reason}
     end
   end
 
-  def write(%{ref: ref} = conn, value) when value in [0, 1] do
+  def write(%{ref: ref} = conn, value) when is_reference(ref) and is_pin_value(value) do
     case(Driver.write(ref, value)) do
       :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
@@ -63,19 +65,23 @@ defimpl Wafer.GPIOProto, for: Wafer.Driver.CircuitsGPIO do
   def direction(%{direction: :in} = conn, :in), do: {:ok, conn}
   def direction(%{direction: :out} = conn, :out), do: {:ok, conn}
 
-  def direction(%{ref: ref} = conn, direction) when direction in [:in, :out] do
+  def direction(%{ref: ref} = conn, direction)
+      when is_reference(ref) and is_pin_direction(direction) do
     case(Driver.set_direction(ref, direction)) do
-      :ok -> %{conn | direction: direction}
+      :ok -> {:ok, %{conn | direction: direction}}
       {:error, reason} -> {:error, reason}
     end
   end
 
-  def enable_interrupt(conn, pin_trigger), do: CircuitsGPIODispatcher.enable(conn, pin_trigger)
-  def disable_interrupt(conn, pin_trigger), do: CircuitsGPIODispatcher.disable(conn, pin_trigger)
+  def enable_interrupt(conn, pin_condition) when is_pin_condition(pin_condition),
+    do: CircuitsGPIODispatcher.enable(conn, pin_condition)
 
-  def pull_mode(%{ref: ref} = conn, mode) when mode in [:not_set, :none, :pull_up, :pull_down] do
+  def disable_interrupt(conn, pin_condition) when is_pin_condition(pin_condition),
+    do: CircuitsGPIODispatcher.disable(conn, pin_condition)
+
+  def pull_mode(%{ref: ref} = conn, mode) when is_reference(ref) and is_pin_pull_mode(mode) do
     case Driver.set_pull_mode(ref, mode) do
-      :ok -> {:error, conn}
+      :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
     end
   end

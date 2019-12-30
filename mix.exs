@@ -1,5 +1,6 @@
 defmodule Wafer.MixProject do
   use Mix.Project
+  @moduledoc false
 
   def project do
     [
@@ -25,9 +26,10 @@ defmodule Wafer.MixProject do
     [
       {:mimic, "~> 1.1", only: :test},
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:elixir_ale, "~> 1.2", only: :dev},
-      {:circuits_i2c, "~> 0.3", only: :dev},
-      {:circuits_gpio, "~> 0.4", only: :dev}
+      {:elixir_ale, "~> 1.2", only: :dev, optional: true},
+      {:circuits_i2c, "~> 0.3", only: :dev, optional: true},
+      {:circuits_gpio, "~> 0.4", only: :dev, optional: true},
+      {:circuits_spi, "~> 0.1", only: :dev, optional: true}
     ]
   end
 

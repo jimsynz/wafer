@@ -1,4 +1,6 @@
 defmodule TestUtils do
+  @moduledoc false
+
   def random_module_name do
     name =
       16
