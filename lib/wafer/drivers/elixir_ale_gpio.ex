@@ -6,6 +6,8 @@ defmodule Wafer.Driver.ElixirALEGPIO do
 
   @moduledoc """
   A connection to a native GPIO pin via ElixirALE's GPIO driver.
+
+  Implements the `Wafer.Conn` behaviour as well as the `Wafer.GPIO` protocol.
   """
 
   @type t :: %__MODULE__{pid: pid}
@@ -39,7 +41,7 @@ defmodule Wafer.Driver.ElixirALEGPIO do
   Note that other connections may still be using the pin.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid}), do: Driver.release(pid)
+  def release(%__MODULE__{pid: pid} = _conn), do: Driver.release(pid)
 end
 
 defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALEGPIO do

@@ -3,6 +3,9 @@ defmodule Wafer.Registers do
   @moduledoc """
   This module provides helpful macros for specifying the registers used to
   communicate with your device.
+
+  This can be a massive time saver, and means you can basically just copy them
+  straight out of the datasheet.
   """
   alias Wafer.Chip
   alias Wafer.Conn

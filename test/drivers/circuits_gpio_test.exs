@@ -79,7 +79,7 @@ defmodule WaferDriverCircuitsGPIOTest do
       Driver
       |> expect(:set_direction, 1, fn ref, direction ->
         assert ref == conn.ref
-        assert direction == :in
+        assert direction == :input
         :ok
       end)
 

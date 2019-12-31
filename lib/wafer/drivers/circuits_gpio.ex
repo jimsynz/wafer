@@ -7,6 +7,8 @@ defmodule Wafer.Driver.CircuitsGPIO do
 
   @moduledoc """
   A connection to a native GPIO pin via Circuits' GPIO driver.
+
+  Implements the `Wafer.Conn` behaviour as well as the `Wafer.GPIO` protocol.
   """
 
   @type t :: %__MODULE__{ref: reference, pin: non_neg_integer, direction: GPIO.pin_direction()}
@@ -41,7 +43,7 @@ defmodule Wafer.Driver.CircuitsGPIO do
   Note that other connections may still be using the pin.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref}) when is_reference(ref), do: Driver.close(ref)
+  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Driver.close(ref)
 end
 
 defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
@@ -68,7 +70,9 @@ defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
 
   def direction(%{ref: ref} = conn, direction)
       when is_reference(ref) and is_pin_direction(direction) do
-    case(Driver.set_direction(ref, direction)) do
+    pin_dir = String.to_atom(Enum.join([direction, "put"], ""))
+
+    case(Driver.set_direction(ref, pin_dir)) do
       :ok -> {:ok, %{conn | direction: direction}}
       {:error, reason} -> {:error, reason}
     end

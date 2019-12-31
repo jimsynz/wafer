@@ -5,6 +5,8 @@ defmodule Wafer.Driver.CircuitsSPI do
 
   @moduledoc """
   A connection to a chip via Circuits's SPI driver.
+
+  Implements the `Wafer.Conn` behaviour as well as the `Wafer.SPI` protocol.
   """
 
   @type t :: %__MODULE__{bus: binary, ref: reference}
@@ -37,7 +39,7 @@ defmodule Wafer.Driver.CircuitsSPI do
   Close the SPI bus connection.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref}) when is_reference(ref), do: Driver.close(ref)
+  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Driver.close(ref)
 end
 
 defimpl Wafer.SPI, for: Wafer.Driver.CircuitsSPI do

@@ -43,6 +43,15 @@ defmodule HTS221 do
 end
 ```
 
+## Running the tests
+
+I've included stub implementations of the parts of `ElixirALE` and `Circuits`
+that are interacted with by this project, so the tests should run and pass on
+machines without physical hardware interfaces.  If you have a Raspberry Pi with
+a Pi Sense Hat connected you can run the tests with the `FAKE_DRIVERS=false`
+environment variable set and it will perform integration tests with two of the
+sensors on this device.
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed

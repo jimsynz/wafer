@@ -3,7 +3,7 @@ defmodule Wafer.Guards do
   Handy guards which you can use in your code to assert correct values.
   """
 
-  @doc "A positive integer"
+  @doc "Pin numbers are non negative integers"
   defguard is_pin_number(pin) when is_integer(pin) and pin >= 0
 
   @doc "Either `:in` or `:out`"
@@ -21,9 +21,9 @@ defmodule Wafer.Guards do
   @doc "An integer between `0` and `0x7F`"
   defguard is_i2c_address(address) when is_integer(address) and address >= 0 and address <= 0x7F
 
-  @doc "A positive integer"
+  @doc "Register addresses are non negative integers usually only one byte, but we don't enforce that here"
   defguard is_register_address(address) when is_integer(address) and address >= 0
 
-  @doc "A positive integer"
+  @doc "Byte sizes are non negative integers"
   defguard is_byte_size(bytes) when is_integer(bytes) and bytes >= 0
 end

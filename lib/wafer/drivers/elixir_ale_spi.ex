@@ -5,6 +5,8 @@ defmodule Wafer.Driver.ElixirALESPI do
 
   @moduledoc """
   A connection to a chip via ElixirALE's SPI driver.
+
+  Implements the `Wafer.Conn` behaviour as well as the `Wafer.SPI` protocol.
   """
 
   @type t :: %__MODULE__{bus: binary, pid: pid}
@@ -38,7 +40,7 @@ defmodule Wafer.Driver.ElixirALESPI do
   Close the SPI bus connection.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid}) when is_pid(pid), do: Driver.release(pid)
+  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: Driver.release(pid)
 end
 
 defimpl Wafer.SPI, for: Wafer.Driver.ElixirALESPI do

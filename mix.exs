@@ -2,14 +2,23 @@ defmodule Wafer.MixProject do
   use Mix.Project
   @moduledoc false
 
+  @description """
+  Wafer is an Elixir library to make writing drivers for i2c and SPI connected
+  peripherals and interacting with GPIO pins easier.
+  """
+  @version "0.1.0"
+
   def project do
     [
       app: :wafer,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      package: package(),
+      description: @description,
+      deps: deps(),
+      consolidate_protocols: Mix.env() != :test
     ]
   end
 
@@ -21,9 +30,21 @@ defmodule Wafer.MixProject do
     ]
   end
 
+  def package do
+    [
+      maintainers: ["James Harton <james@automat.nz>"],
+      licenses: ["MIT"],
+      links: %{
+        "Source" => "https://gitlab.com/jimsy/wafer"
+      }
+    ]
+  end
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:earmark, ">= 0.0.0", only: :dev},
       {:mimic, "~> 1.1", only: :test},
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
       {:elixir_ale, "~> 1.2", optional: true},

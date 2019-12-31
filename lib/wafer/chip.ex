@@ -4,6 +4,32 @@ defprotocol Wafer.Chip do
   @moduledoc """
   A `Chip` is a physical peripheral with registers which can be read from and
   written to.
+
+  Rather than interacting with this protocol directly, it's a lot easier to use
+  the macros in `Wafer.Registers` to do it for you.
+
+  ## Deriving
+
+  If you're implementing your own `Conn` type which simply delegates to one of
+  the lower level drivers then you can derive this protocol automatically:
+
+  ```elixir
+  defmodule MyConnection do
+    @derive Wafer.Chip
+    defstruct [:conn]
+  end
+  ```
+
+  If your type uses a key other than `conn` for the inner connection you can
+  specify it while deriving:
+
+  ```elixir
+  defmodule MyConnection do
+    @derive {Wafer.Chip, key: :i2c_conn}
+    defstruct [:i2c_conn]
+  end
+  ```
+
   """
 
   @type register_address :: non_neg_integer
@@ -41,7 +67,7 @@ defprotocol Wafer.Chip do
 
       iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.write_register(conn, 0, <<0>>)
-      :ok
+      {:ok, conn}
   """
   @spec write_register(Conn.t(), register_address, data :: binary) ::
           {:ok, t} | {:error, reason :: any}
@@ -66,9 +92,53 @@ defprotocol Wafer.Chip do
 
       iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.swap_register(conn, 0, <<1>>)
-      {:ok, <<0>>}
+      {:ok, <<0>>, conn}
   """
   @spec swap_register(Conn.t(), register_address, new_data :: binary) ::
           {:ok, data :: binary, t} | {:error, reason :: any}
   def swap_register(conn, register_address, new_data)
+end
+
+defimpl Wafer.Chip, for: Any do
+  defmacro __deriving__(module, struct, options) do
+    key = Keyword.get(options, :key, :conn)
+
+    unless Map.has_key?(struct, key) do
+      raise(
+        "Unable to derive `Wafer.Chip` for `#{module}`: key `#{inspect(key)}` not present in struct."
+      )
+    end
+
+    quote do
+      defimpl Wafer.Chip, for: unquote(module) do
+        import Wafer.Guards
+        alias Wafer.Chip
+
+        def read_register(%{unquote(key) => inner_conn}, register_address, bytes)
+            when is_register_address(register_address) and is_byte_size(bytes),
+            do: Chip.read_register(inner_conn, register_address, bytes)
+
+        def write_register(%{unquote(key) => inner_conn} = conn, register_address, data)
+            when is_register_address(register_address) and is_binary(data) do
+          with {:ok, inner_conn} <- Chip.write_register(inner_conn, register_address, data),
+               do: {:ok, Map.put(conn, unquote(key), inner_conn)}
+        end
+
+        def swap_register(%{unquote(key) => inner_conn} = conn, register_address, new_data) do
+          with {:ok, data, inner_conn} <-
+                 Chip.swap_register(inner_conn, register_address, new_data),
+               do: {:ok, data, Map.put(conn, unquote(key), inner_conn)}
+        end
+      end
+    end
+  end
+
+  def read_register(unknown, _register_address, _bytes),
+    do: {:error, "`Wafer.Chip` not implemented for `#{inspect(unknown)}`"}
+
+  def write_register(unknown, _register_address, _data),
+    do: {:error, "`Wafer.Chip` not implemented for `#{inspect(unknown)}`"}
+
+  def swap_register(unknown, _register_address, _new_data),
+    do: {:error, "`Wafer.Chip` not implemented for `#{inspect(unknown)}`"}
 end

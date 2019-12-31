@@ -7,6 +7,8 @@ defmodule Wafer.Driver.CircuitsI2C do
 
   @moduledoc """
   A connection to a chip via Circuits' I2C driver.
+
+  Implements the `Wafer.Conn` behaviour as well as the `Wafer.Chip` and `Wafer.I2C` protocols.
   """
 
   @type t :: %__MODULE__{address: I2C.address(), bus: binary, ref: reference}
@@ -38,7 +40,7 @@ defmodule Wafer.Driver.CircuitsI2C do
   end
 
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref}), do: Driver.close(ref)
+  def release(%__MODULE__{ref: ref} = _conn), do: Driver.close(ref)
 end
 
 defimpl Wafer.Chip, for: Wafer.Driver.CircuitsI2C do

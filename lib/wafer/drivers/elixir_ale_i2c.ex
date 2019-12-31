@@ -7,6 +7,8 @@ defmodule Wafer.Driver.ElixirALEI2C do
 
   @moduledoc """
   A connection to a chip via ElixirALE's I2C driver.
+
+  Implements the `Wafer.Conn` behaviour as well as the `Wafer.Chip` and `Wafer.I2C` protocols.
   """
 
   @type t :: %__MODULE__{address: I2C.address(), bus: binary, pid: pid}
@@ -39,7 +41,7 @@ defmodule Wafer.Driver.ElixirALEI2C do
   end
 
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid}) when is_pid(pid), do: ElixirALE.I2C.release(pid)
+  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: ElixirALE.I2C.release(pid)
 end
 
 defimpl Wafer.Chip, for: Wafer.Driver.ElixirALEI2C do
