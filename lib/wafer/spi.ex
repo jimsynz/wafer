@@ -59,7 +59,7 @@ defimpl Wafer.SPI, for: Any do
         import Wafer.Guards
         alias Wafer.SPI
 
-        def transfer(%{unquote(key) => inner_conn}, data)
+        def transfer(%{unquote(key) => inner_conn} = conn, data)
             when is_binary(data) do
           with {:ok, data, inner_conn} <- SPI.transfer(inner_conn, data),
                do: {:ok, data, Map.put(conn, unquote(key), inner_conn)}
