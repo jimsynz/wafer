@@ -26,7 +26,7 @@ defmodule Wafer.Driver.CircuitsSPI do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with bus when is_binary(bus) <- Keyword.get(opts, :bus_name),
+    with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
          {:ok, ref} when is_reference(ref) <- Driver.open(bus, Keyword.delete(opts, :bus_name)) do
       {:ok, %__MODULE__{bus: bus, ref: ref}}
     else

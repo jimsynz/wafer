@@ -26,7 +26,7 @@ defmodule Wafer.Driver.ElixirALESPI do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with bus when is_binary(bus) <- Keyword.get(opts, :bus_name),
+    with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
          {:ok, pid} when is_pid(pid) <-
            Driver.start_link(bus, Keyword.delete(opts, :bus_name), []) do
       {:ok, %__MODULE__{bus: bus, pid: pid}}

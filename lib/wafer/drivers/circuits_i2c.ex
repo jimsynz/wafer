@@ -21,8 +21,8 @@ defmodule Wafer.Driver.CircuitsI2C do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with bus when is_binary(bus) <- Keyword.get(opts, :bus_name),
-         address when is_i2c_address(address) <- Keyword.get(opts, :address),
+    with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
+         {:ok, address} when is_i2c_address(address) <- Keyword.fetch(opts, :address),
          {:ok, ref} when is_reference(ref) <- Driver.open(bus),
          devices when is_list(devices) <- Driver.detect_devices(ref),
          true <- Keyword.get(opts, :force, false) || Enum.member?(devices, address) do

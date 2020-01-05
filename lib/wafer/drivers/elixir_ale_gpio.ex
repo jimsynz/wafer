@@ -3,6 +3,7 @@ defmodule Wafer.Driver.ElixirALEGPIO do
   @behaviour Wafer.Conn
   alias ElixirALE.GPIO, as: Driver
   alias Wafer.GPIO
+  import Wafer.Guards
 
   @moduledoc """
   A connection to a native GPIO pin via ElixirALE's GPIO driver.
@@ -25,7 +26,7 @@ defmodule Wafer.Driver.ElixirALEGPIO do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with pin when is_integer(pin) and pin >= 0 <- Keyword.get(opts, :pin),
+    with {:ok, pin} when is_pin_number(pin) <- Keyword.fetch(opts, :pin),
          direction when direction in [:in, :out] <- Keyword.get(opts, :direction, :out),
          {:ok, pid} <- Driver.start_link(pin, direction, Keyword.drop(opts, ~w[pin direction]a)) do
       {:ok, %__MODULE__{pid: pid, pin: pin, direction: direction}}

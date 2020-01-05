@@ -65,6 +65,14 @@ defmodule WaferElixirALEI2CTest do
       assert {:ok, %Subject{} = conn} =
                Subject.acquire(bus_name: busname, address: address, force: true)
     end
+
+    test "when the bus name is not specified it returns an error" do
+      assert {:error, _} = Subject.acquire(address: 0x13)
+    end
+
+    test "when the address is not specified it returns an error" do
+      assert {:error, _} = Subject.acquire(bus_name: "i2c-1")
+    end
   end
 
   describe "release/1" do

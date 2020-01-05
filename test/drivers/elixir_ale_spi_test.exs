@@ -18,6 +18,10 @@ defmodule WaferElixirALESPITest do
 
       assert {:ok, %Subject{}} = Subject.acquire(bus_name: "spidev0.0")
     end
+
+    test "when the bus name is not specified it returns an error" do
+      assert {:error, _} = Subject.acquire([])
+    end
   end
 
   describe "release/1" do

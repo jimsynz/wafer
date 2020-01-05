@@ -29,13 +29,14 @@ defmodule Wafer.Conn do
   ```
   """
 
+  @type t :: any
   @type options :: [option]
   @type option :: {atom, any}
 
   @doc """
   Acquire a connection to a peripheral using the provided driver.
   """
-  @callback acquire(options) :: t :: {:error, reason :: any}
+  @callback acquire(options) :: {:ok, t} | {:error, reason :: any}
 
   @doc """
   Release all resources associated with this connection.

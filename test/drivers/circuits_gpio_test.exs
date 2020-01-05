@@ -19,6 +19,10 @@ defmodule WaferDriverCircuitsGPIOTest do
 
       assert {:ok, %Subject{}} = Subject.acquire(pin: 1, direction: :out)
     end
+
+    test "returns an error with the pin is not specified" do
+      assert {:error, _} = Subject.acquire([])
+    end
   end
 
   describe "release/1" do

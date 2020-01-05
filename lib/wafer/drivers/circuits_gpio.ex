@@ -26,7 +26,7 @@ defmodule Wafer.Driver.CircuitsGPIO do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with pin when is_pin_number(pin) <- Keyword.get(opts, :pin),
+    with {:ok, pin} when is_pin_number(pin) <- Keyword.fetch(opts, :pin),
          direction when is_pin_direction(direction) <- Keyword.get(opts, :direction, :out),
          pin_dir <- String.to_atom(Enum.join([direction, "put"], "")),
          {:ok, ref} <- Driver.open(pin, pin_dir, Keyword.drop(opts, ~w[pin direction]a)) do

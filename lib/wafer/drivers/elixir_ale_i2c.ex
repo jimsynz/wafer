@@ -22,8 +22,8 @@ defmodule Wafer.Driver.ElixirALEI2C do
   """
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
-    with bus when is_binary(bus) <- Keyword.get(opts, :bus_name),
-         address when is_i2c_address(address) <- Keyword.get(opts, :address),
+    with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
+         {:ok, address} when is_i2c_address(address) <- Keyword.fetch(opts, :address),
          {:ok, pid} <- Driver.start_link(bus, address),
          devices when is_list(devices) <- Driver.detect_devices(pid),
          true <- Keyword.get(opts, :force, false) || Enum.member?(devices, address) do
