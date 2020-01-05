@@ -30,6 +30,7 @@ defprotocol Wafer.GPIO do
   ```
   """
 
+  @type pin_number :: non_neg_integer
   @type pin_direction :: :in | :out
   @type pin_condition :: :none | :rising | :falling | :both
   @type pin_value :: 0 | 1

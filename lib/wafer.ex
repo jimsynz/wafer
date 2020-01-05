@@ -9,6 +9,4 @@ defmodule Wafer do
   Wafer works with both ElixirALE and Circuits.  As such it's up to you to
   define which dependency you're using.
   """
-
-  @type i2c_address :: 0..127
 end

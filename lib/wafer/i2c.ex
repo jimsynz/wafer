@@ -68,6 +68,7 @@ defprotocol Wafer.I2C do
 end
 
 defimpl Wafer.I2C, for: Any do
+  # credo:disable-for-next-line
   defmacro __deriving__(module, struct, options) do
     key = Keyword.get(options, :key, :conn)
 

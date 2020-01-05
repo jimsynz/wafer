@@ -1,7 +1,7 @@
 defmodule WaferI2CTest do
   use ExUnit.Case, async: true
-  alias Wafer.I2C
   alias Wafer.Driver.CircuitsI2C, as: Driver
+  alias Wafer.I2C
   alias Wafer.I2C.Wafer.Driver.CircuitsI2C, as: Impl
   import Mimic
   Code.require_file("test/support/test_utils.exs")
