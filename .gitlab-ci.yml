@@ -16,17 +16,31 @@ before_script:
   - mix deps.get --only test
 
 test:
+  stage: test
   script:
     - mix test
 
 credo:
+  stage: test
   script:
     - mix credo
 
 audit:
+  stage: test
   script:
     - mix hex.audit
 
 format:
+  stage: test
   script:
     - mix format --check-formatted
+
+pages:
+  stage: deploy
+  script:
+    - mix docs -o public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
