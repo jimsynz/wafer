@@ -96,13 +96,13 @@ defmodule WaferDriverCircuitsGPIOTest do
       conn = conn()
 
       Dispatcher
-      |> expect(:enable, 1, fn conn1, trigger ->
+      |> expect(:enable, 1, fn conn1, pin_condition, _metadata ->
         assert conn1 == conn
-        assert trigger == :rising
+        assert pin_condition == :rising
         :ok
       end)
 
-      assert :ok = GPIO.enable_interrupt(conn, :rising)
+      assert {:ok, ^conn} = GPIO.enable_interrupt(conn, :rising)
     end
   end
 
@@ -111,13 +111,13 @@ defmodule WaferDriverCircuitsGPIOTest do
       conn = conn()
 
       Dispatcher
-      |> expect(:disable, 1, fn conn1, trigger ->
+      |> expect(:disable, 1, fn conn1, pin_condition ->
         assert conn1 == conn
-        assert trigger == :rising
+        assert pin_condition == :rising
         :ok
       end)
 
-      assert :ok = GPIO.disable_interrupt(conn, :rising)
+      assert {:ok, ^conn} = GPIO.disable_interrupt(conn, :rising)
     end
   end
 

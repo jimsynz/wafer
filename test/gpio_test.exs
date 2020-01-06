@@ -69,13 +69,13 @@ defmodule WaferGPIOTest do
       outer_struct = struct(outer_mod, conn: %Driver{})
 
       Impl
-      |> expect(:enable_interrupt, 1, fn conn, condition ->
+      |> expect(:enable_interrupt, 1, fn conn, condition, _metadata ->
         assert conn == %Driver{}
         assert condition == :rising
         {:ok, conn}
       end)
 
-      assert {:ok, ^outer_struct} = GPIO.enable_interrupt(outer_struct, :rising)
+      assert {:ok, ^outer_struct} = GPIO.enable_interrupt(outer_struct, :rising, nil)
     end
 
     test "disabling interrupt on a derived pin" do

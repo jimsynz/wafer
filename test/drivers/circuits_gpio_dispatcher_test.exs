@@ -2,7 +2,7 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
   use ExUnit.Case, async: true
   alias Circuits.GPIO, as: Driver
   alias Wafer.Driver.CircuitsGPIODispatcher, as: Dispatcher
-  alias Wafer.InterruptRegistry
+  alias Wafer.InterruptRegistry, as: IR
   import Mimic
   @moduledoc false
 
@@ -11,56 +11,48 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       conn = conn()
 
       Driver
-      |> expect(:set_interrupts, 1, fn ref, trigger ->
+      |> expect(:set_interrupts, 1, fn ref, pin_condition ->
         assert ref == conn.ref
-        assert trigger == :rising
+        assert pin_condition == :rising
         :ok
       end)
 
       assert {:reply, {:ok, conn}, _state} =
-               Dispatcher.handle_call({:enable, conn, :rising, self()}, nil, state())
+               Dispatcher.handle_call({:enable, conn, :rising, :metadata, self()}, nil, state())
 
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :rising}, conn) == [{self(), conn}]
+      assert IR.subscribers?({Dispatcher, 1}, :rising)
     end
 
     test "enabling falling interrupts" do
       conn = conn()
 
       Driver
-      |> expect(:set_interrupts, 1, fn ref, trigger ->
+      |> expect(:set_interrupts, 1, fn ref, pin_condition ->
         assert ref == conn.ref
-        assert trigger == :falling
+        assert pin_condition == :falling
         :ok
       end)
 
       assert {:reply, {:ok, conn}, _state} =
-               Dispatcher.handle_call({:enable, conn, :falling, self()}, nil, state())
+               Dispatcher.handle_call({:enable, conn, :falling, :metadata, self()}, nil, state())
 
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :falling}, conn) == [
-               {self(), conn}
-             ]
+      assert IR.subscribers?({Dispatcher, 1}, :falling)
     end
 
     test "enabling both interrupts" do
       conn = conn()
 
       Driver
-      |> expect(:set_interrupts, 1, fn ref, trigger ->
+      |> expect(:set_interrupts, 1, fn ref, pin_condition ->
         assert ref == conn.ref
-        assert trigger == :both
+        assert pin_condition == :both
         :ok
       end)
 
       assert {:reply, {:ok, conn}, _state} =
-               Dispatcher.handle_call({:enable, conn, :both, self()}, nil, state())
+               Dispatcher.handle_call({:enable, conn, :both, :metadata, self()}, nil, state())
 
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :falling}, conn) == [
-               {self(), conn}
-             ]
-
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :rising}, conn) == [
-               {self(), conn}
-             ]
+      assert IR.subscribers?({Dispatcher, 1}, :both)
     end
 
     test "disabling rising interrupts" do
@@ -69,12 +61,12 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       Driver
       |> stub(:set_interrupts, fn _, _ -> :ok end)
 
-      Dispatcher.handle_call({:enable, conn, :rising, self()}, nil, state())
+      Dispatcher.handle_call({:enable, conn, :rising, :metadata, self()}, nil, state())
 
       assert {:reply, {:ok, conn}, _state} =
                Dispatcher.handle_call({:disable, conn, :rising}, nil, state())
 
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :rising}, conn) == []
+      refute IR.subscribers?({Dispatcher, 1}, :rising)
     end
 
     test "disabling falling interrupts" do
@@ -83,12 +75,12 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       Driver
       |> stub(:set_interrupts, fn _, _ -> :ok end)
 
-      Dispatcher.handle_call({:enable, conn, :falling, self()}, nil, state())
+      Dispatcher.handle_call({:enable, conn, :falling, :metadta, self()}, nil, state())
 
       assert {:reply, {:ok, conn}, _state} =
                Dispatcher.handle_call({:disable, conn, :falling}, nil, state())
 
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :falling}, conn) == []
+      refute IR.subscribers?({Dispatcher, 1}, :falling)
     end
 
     test "disabling both interrupts" do
@@ -97,13 +89,12 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       Driver
       |> stub(:set_interrupts, fn _, _ -> :ok end)
 
-      Dispatcher.handle_call({:enable, conn, :both, self()}, nil, state())
+      Dispatcher.handle_call({:enable, conn, :both, :metadata, self()}, nil, state())
 
       assert {:reply, {:ok, conn}, _state} =
                Dispatcher.handle_call({:disable, conn, :both}, nil, state())
 
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :rising}, conn) == []
-      assert Registry.match(InterruptRegistry, {Dispatcher, 1, :falling}, conn) == []
+      refute IR.subscribers?({Dispatcher, 1}, :both)
     end
   end
 
@@ -113,11 +104,11 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       |> stub(:set_interrupts, fn _, _ -> :ok end)
 
       {:reply, {:ok, conn}, state} =
-        Dispatcher.handle_call({:enable, conn(), :both, self()}, nil, state())
+        Dispatcher.handle_call({:enable, conn(), :both, :metadata, self()}, nil, state())
 
       {:noreply, _state} = Dispatcher.handle_info({:circuits_gpio, 1, :ts, 1}, state)
 
-      assert_received {:interrupt, ^conn, :rising}
+      assert_received {:interrupt, ^conn, :rising, :metadata}
     end
 
     test "publishing interrupts when the value rises" do
@@ -127,11 +118,11 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       state = state(values: %{1 => 0})
 
       {:reply, {:ok, conn}, state} =
-        Dispatcher.handle_call({:enable, conn(), :both, self()}, nil, state)
+        Dispatcher.handle_call({:enable, conn(), :both, :metadata, self()}, nil, state)
 
       {:noreply, _state} = Dispatcher.handle_info({:circuits_gpio, 1, :ts, 1}, state)
 
-      assert_received {:interrupt, ^conn, :rising}
+      assert_received {:interrupt, ^conn, :rising, :metadata}
     end
 
     test "publishing interrupts when the value falls" do
@@ -141,11 +132,11 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       state = state(values: %{1 => 1})
 
       {:reply, {:ok, conn}, state} =
-        Dispatcher.handle_call({:enable, conn(), :both, self()}, nil, state)
+        Dispatcher.handle_call({:enable, conn(), :both, :metadata, self()}, nil, state)
 
       {:noreply, _state} = Dispatcher.handle_info({:circuits_gpio, 1, :ts, 0}, state)
 
-      assert_received {:interrupt, ^conn, :falling}
+      assert_received {:interrupt, ^conn, :falling, :metadata}
     end
 
     test "ignoring interrupts when the value stays high" do
@@ -155,11 +146,11 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       state = state(values: %{1 => 1})
 
       {:reply, {:ok, _conn}, state} =
-        Dispatcher.handle_call({:enable, conn(), :both, self()}, nil, state)
+        Dispatcher.handle_call({:enable, conn(), :both, :metadata, self()}, nil, state)
 
       {:noreply, _state} = Dispatcher.handle_info({:circuits_gpio, 1, :ts, 1}, state)
 
-      refute_received {:interrupt, _conn, _condition}
+      refute_received {:interrupt, _conn, _condition, _metadata}
     end
 
     test "ignoring interrupts when the value stays low" do
@@ -169,11 +160,11 @@ defmodule WaferDriverCircuitsGPIODispatcherTest do
       state = state(values: %{1 => 0})
 
       {:reply, {:ok, _conn}, state} =
-        Dispatcher.handle_call({:enable, conn(), :both, self()}, nil, state)
+        Dispatcher.handle_call({:enable, conn(), :both, :metadata, self()}, nil, state)
 
       {:noreply, _state} = Dispatcher.handle_info({:circuits_gpio, 1, :ts, 0}, state)
 
-      refute_received {:interrupt, _conn, _condition}
+      refute_received {:interrupt, _conn, _condition, _metadata}
     end
   end
 

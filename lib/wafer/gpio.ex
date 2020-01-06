@@ -58,10 +58,15 @@ defprotocol Wafer.GPIO do
   def direction(conn, pin_direction)
 
   @doc """
-  Enable an interrupt for this connection and trigger.
+  Enable an interrupt for this connection and pin_condition.
+
+  ## Arguments
+  - `pin_condition` - Either `:rising` or `:falling`.
+  - `metadata` - any optional data you wish to receive along with your
+    interrupts.  Defaults to `nil`.
 
   Interrupts will be sent to the calling process as messages in the form of
-  `{:interrupt, Conn.t(), pin_condition}`.
+  `{:interrupt, Conn.t(), pin_condition, metadata | nil}`.
 
   ## Implementors note
 
@@ -71,11 +76,12 @@ defprotocol Wafer.GPIO do
   examples in the `CircuitsGPIODispatcher` and `ElixirALEGPIODispatcher`
   modules.
   """
-  @spec enable_interrupt(Conn.t(), pin_condition) :: {:ok, Conn.t()} | {:error, reason :: any}
-  def enable_interrupt(conn, pin_condition)
+  @spec enable_interrupt(Conn.t(), pin_condition, any) ::
+          {:ok, Conn.t()} | {:error, reason :: any}
+  def enable_interrupt(conn, pin_condition, metadata \\ nil)
 
   @doc """
-  Disables interrupts for this connection and trigger.
+  Disables interrupts for this connection and pin_condition.
   """
   @spec disable_interrupt(Conn.t(), pin_condition) :: {:ok, Conn.t()} | {:error, reason :: any}
   def disable_interrupt(conn, pin_condition)
@@ -122,9 +128,9 @@ defimpl Wafer.GPIO, for: Any do
                do: {:ok, Map.put(conn, unquote(key), inner_conn)}
         end
 
-        def enable_interrupt(%{unquote(key) => inner_conn} = conn, pin_condition)
+        def enable_interrupt(%{unquote(key) => inner_conn} = conn, pin_condition, metadata \\ nil)
             when is_pin_condition(pin_condition) do
-          with {:ok, inner_conn} <- GPIO.enable_interrupt(inner_conn, pin_condition),
+          with {:ok, inner_conn} <- GPIO.enable_interrupt(inner_conn, pin_condition, metadata),
                do: {:ok, Map.put(conn, unquote(key), inner_conn)}
         end
 
@@ -151,10 +157,7 @@ defimpl Wafer.GPIO, for: Any do
   def direction(unknown, _pin_direction),
     do: {:error, "`Wafer.GPIO` not implemented for `#{inspect(unknown)}"}
 
-  def enable_interrupt(unknown, _pin_condition),
-    do: {:error, "`Wafer.GPIO` not implemented for `#{inspect(unknown)}`"}
-
-  def disable_interrupt(unknown, _pin_condition),
+  def enable_interrupt(unknown, _pin_condition, _metadata \\ nil),
     do: {:error, "`Wafer.GPIO` not implemented for `#{inspect(unknown)}`"}
 
   def pull_mode(unknown, _pull_mode),

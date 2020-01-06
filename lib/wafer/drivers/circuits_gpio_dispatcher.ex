@@ -18,14 +18,14 @@ defmodule Wafer.Driver.CircuitsGPIODispatcher do
   def start_link(opts), do: GenServer.start_link(__MODULE__, [opts], name: CircuitsGPIODispatcher)
 
   @doc """
-  Enable interrupts for this connection using the specified trigger.
+  Enable interrupts for this connection using the specified pin_condition.
   """
-  @spec enable(Conn.t(), GPIO.pin_condition()) :: {:ok, Conn.t()} | {:error, reason :: any}
-  def enable(conn, pin_condition) when is_pin_condition(pin_condition),
-    do: GenServer.call(CircuitsGPIODispatcher, {:enable, conn, pin_condition, self()})
+  @spec enable(Conn.t(), GPIO.pin_condition(), any) :: {:ok, Conn.t()} | {:error, reason :: any}
+  def enable(conn, pin_condition, metadata \\ nil) when is_pin_condition(pin_condition),
+    do: GenServer.call(CircuitsGPIODispatcher, {:enable, conn, pin_condition, metadata, self()})
 
   @doc """
-  Disable interrupts for this connection using the specified trigger.
+  Disable interrupts for this connection using the specified pin_condition.
   """
   @spec disable(Conn.t(), GPIO.pin_condition()) :: {:ok, Conn.t()} | {:error, reason :: any}
   def disable(conn, pin_condition) when is_pin_condition(pin_condition),
@@ -37,14 +37,17 @@ defmodule Wafer.Driver.CircuitsGPIODispatcher do
   end
 
   @impl true
-  def handle_call({:enable, %{pin: pin, ref: ref} = conn, pin_condition, receiver}, _from, state)
+  def handle_call(
+        {:enable, %{pin: pin, ref: ref} = conn, pin_condition, metadata, receiver},
+        _from,
+        state
+      )
       when is_pin_condition(pin_condition) and is_pid(receiver) and is_reference(ref) and
              is_pin_number(pin) do
-    case Driver.set_interrupts(ref, pin_condition) do
-      :ok ->
-        subscribe(pin, pin_condition, conn, receiver)
-        {:reply, {:ok, conn}, state}
-
+    with :ok <- Driver.set_interrupts(ref, pin_condition),
+         :ok <- InterruptRegistry.subscribe(key(pin), pin_condition, conn, metadata, receiver) do
+      {:reply, {:ok, conn}, state}
+    else
       {:error, reason} ->
         {:reply, {:error, reason}, state}
     end
@@ -52,10 +55,10 @@ defmodule Wafer.Driver.CircuitsGPIODispatcher do
 
   def handle_call({:disable, %{pin: pin} = conn, pin_condition}, _from, %{values: values} = state)
       when is_pin_number(pin) and is_pin_condition(pin_condition) do
-    unsubscribe(pin, pin_condition, conn)
+    key = key(pin)
+    :ok = InterruptRegistry.unsubscribe(key, pin_condition, conn)
 
-    values = if any_pin_subs?(pin), do: values, else: Map.delete(values, pin)
-
+    values = if InterruptRegistry.subscribers?(key), do: values, else: Map.delete(values, pin)
     {:reply, {:ok, conn}, %{state | values: values}}
   end
 
@@ -66,72 +69,15 @@ defmodule Wafer.Driver.CircuitsGPIODispatcher do
       )
       when is_pin_number(pin) and is_pin_value(value) do
     last_value = Map.get(values, pin, nil)
-
-    on_condition_change(last_value, value, fn condition ->
-      Registry.dispatch(InterruptRegistry, {__MODULE__, pin, condition}, fn subs ->
-        for {pid, conn} <- subs do
-          send(pid, {:interrupt, conn, condition})
-        end
-      end)
-    end)
-
+    maybe_publish(key(pin), last_value, value)
     {:noreply, %{state | values: Map.put(values, pin, value)}}
   end
 
-  defp on_condition_change(0, 1, callback), do: callback.(:rising)
-  defp on_condition_change(1, 0, callback), do: callback.(:falling)
-  defp on_condition_change(nil, 1, callback), do: callback.(:rising)
-  defp on_condition_change(nil, 0, callback), do: callback.(:falling)
-  defp on_condition_change(_, _, _), do: :no_change
+  defp key(pin), do: {__MODULE__, pin}
 
-  defp subscribe(pin, :rising, conn, receiver),
-    do:
-      Registry.register_name(
-        {InterruptRegistry, {__MODULE__, pin, :rising}, conn},
-        receiver
-      )
-
-  defp subscribe(pin, :falling, conn, receiver),
-    do:
-      Registry.register_name(
-        {InterruptRegistry, {__MODULE__, pin, :falling}, conn},
-        receiver
-      )
-
-  defp subscribe(pin, :both, conn, receiver) do
-    Registry.register_name(
-      {InterruptRegistry, {__MODULE__, pin, :rising}, conn},
-      receiver
-    )
-
-    Registry.register_name(
-      {InterruptRegistry, {__MODULE__, pin, :falling}, conn},
-      receiver
-    )
-  end
-
-  defp unsubscribe(pin, :rising, conn),
-    do: Registry.unregister_match(InterruptRegistry, {__MODULE__, pin, :rising}, conn)
-
-  defp unsubscribe(pin, :falling, conn),
-    do: Registry.unregister_match(InterruptRegistry, {__MODULE__, pin, :falling}, conn)
-
-  defp unsubscribe(pin, :both, conn) do
-    Registry.unregister_match(InterruptRegistry, {__MODULE__, pin, :rising}, conn)
-    Registry.unregister_match(InterruptRegistry, {__MODULE__, pin, :falling}, conn)
-  end
-
-  defp any_pin_subs?(pin) do
-    rising_subs =
-      InterruptRegistry
-      |> Registry.lookup({__MODULE__, pin, :rising})
-
-    falling_subs =
-      InterruptRegistry
-      |> Registry.lookup({__MODULE__, pin, :falling})
-
-    rising_subs
-    |> Stream.concat(falling_subs)
-    |> Enum.any?()
-  end
+  defp maybe_publish(key, nil, 1), do: InterruptRegistry.publish(key, :rising)
+  defp maybe_publish(key, 0, 1), do: InterruptRegistry.publish(key, :rising)
+  defp maybe_publish(key, nil, 0), do: InterruptRegistry.publish(key, :falling)
+  defp maybe_publish(key, 1, 0), do: InterruptRegistry.publish(key, :falling)
+  defp maybe_publish(_key, _, _), do: :ignore
 end

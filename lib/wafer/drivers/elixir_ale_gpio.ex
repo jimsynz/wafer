@@ -65,8 +65,8 @@ defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALEGPIO do
 
   def direction(_conn, _direction), do: {:error, :not_supported}
 
-  def enable_interrupt(conn, pin_condition),
-    do: ElixirALEGPIODispatcher.enable(conn, pin_condition)
+  def enable_interrupt(conn, pin_condition, metadata \\ nil),
+    do: ElixirALEGPIODispatcher.enable(conn, pin_condition, metadata)
 
   def disable_interrupt(conn, pin_condition),
     do: ElixirALEGPIODispatcher.disable(conn, pin_condition)

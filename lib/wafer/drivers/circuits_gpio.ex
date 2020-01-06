@@ -78,11 +78,14 @@ defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
     end
   end
 
-  def enable_interrupt(conn, pin_condition) when is_pin_condition(pin_condition),
-    do: CircuitsGPIODispatcher.enable(conn, pin_condition)
+  def enable_interrupt(conn, pin_condition, metadata \\ nil)
+      when is_pin_condition(pin_condition) do
+    with :ok <- CircuitsGPIODispatcher.enable(conn, pin_condition, metadata), do: {:ok, conn}
+  end
 
-  def disable_interrupt(conn, pin_condition) when is_pin_condition(pin_condition),
-    do: CircuitsGPIODispatcher.disable(conn, pin_condition)
+  def disable_interrupt(conn, pin_condition) when is_pin_condition(pin_condition) do
+    with :ok <- CircuitsGPIODispatcher.disable(conn, pin_condition), do: {:ok, conn}
+  end
 
   def pull_mode(%{ref: ref} = conn, mode) when is_reference(ref) and is_pin_pull_mode(mode) do
     case Driver.set_pull_mode(ref, mode) do
