@@ -6,6 +6,8 @@ Wafer provides Elixir protocols for interacting with device registers and dealin
 
 Wafer implements the [GPIO](https://hexdocs.pm/wafer/Wafer.GPIOProto.html) and [Chip](https://hexdocs.pm/wafer/Wafer.Chip.html) protocols for [ElixirALE](https://hex.pm/packages/elixir_ale)'s GPIO and I2C drivers, [Circuits.GPIO](https://hex.pm/packages/circuits_gpio) and [Circuits.I2C](https://hex.pm/packages/circuits_i2c).  Implementing it for SPI should also be trivial, I just don't have any SPI devices to test with at the moment.
 
+Documentation for the master branch can always be found [here](https://jimsy.gitlab.io/wafer/).
+
 ## Working with registers
 
 Wafer provides the very helpful [Registers](https://hexdocs.pm/wafer/Wafer.Registers.html) macros which allow you to quickly and easily define your registers for your device:
