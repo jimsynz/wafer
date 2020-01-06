@@ -33,7 +33,7 @@ defmodule Wafer.MixProject do
   def package do
     [
       maintainers: ["James Harton <james@automat.nz>"],
-      licenses: ["MIT"],
+      licenses: ["Hippocratic"],
       links: %{
         "Source" => "https://gitlab.com/jimsy/wafer"
       }
