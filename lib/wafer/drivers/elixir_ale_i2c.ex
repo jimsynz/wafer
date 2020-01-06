@@ -114,3 +114,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALEI2C do
     end
   end
 end
+
+defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALEI2C do
+  def id(%{address: address, bus: bus}), do: {Wafer.Driver.ElixirALEI2C, bus, address}
+end

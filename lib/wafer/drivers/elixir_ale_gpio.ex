@@ -73,3 +73,7 @@ defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALEGPIO do
 
   def pull_mode(_conn, _pull_mode), do: {:error, :not_supported}
 end
+
+defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALEGPIO do
+  def id(%{pin: pin}), do: {Wafer.Driver.ElixirALEGPIO, pin}
+end

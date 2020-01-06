@@ -94,3 +94,7 @@ defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
     end
   end
 end
+
+defimpl Wafer.DeviceID, for: Wafer.Driver.CircuitsGPIO do
+  def id(%{pin: pin}), do: {Wafer.Driver.CircuitsGPIO, pin}
+end

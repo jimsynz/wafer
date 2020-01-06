@@ -52,3 +52,7 @@ defimpl Wafer.SPI, for: Wafer.Driver.CircuitsSPI do
     end
   end
 end
+
+defimpl Wafer.DeviceID, for: Wafer.Driver.CircuitsSPI do
+  def id(%{bus: bus}), do: {Wafer.Driver.CircuitsSPI, bus}
+end

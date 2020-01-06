@@ -53,3 +53,7 @@ defimpl Wafer.SPI, for: Wafer.Driver.ElixirALESPI do
     end
   end
 end
+
+defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALESPI do
+  def id(%{bus: bus}), do: {Wafer.Driver.ElixirALESPI, bus}
+end
