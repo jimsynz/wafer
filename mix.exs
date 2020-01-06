@@ -43,8 +43,8 @@ defmodule Wafer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, ">= 0.0.0", only: :dev},
-      {:earmark, ">= 0.0.0", only: :dev},
+      {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
+      {:earmark, ">= 0.0.0", only: [:dev, :test]},
       {:mimic, "~> 1.1", only: :test},
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
       {:elixir_ale, "~> 1.2", optional: true},
