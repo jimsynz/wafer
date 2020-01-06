@@ -37,6 +37,8 @@ format:
 
 pages:
   stage: deploy
+  variables:
+    MIX_ENV: dev
   script:
     - mix docs -o public
   artifacts:
