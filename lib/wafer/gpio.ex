@@ -160,6 +160,9 @@ defimpl Wafer.GPIO, for: Any do
   def enable_interrupt(unknown, _pin_condition, _metadata \\ nil),
     do: {:error, "`Wafer.GPIO` not implemented for `#{inspect(unknown)}`"}
 
+  def disable_interrupt(unknown, _pin_condition),
+    do: {:error, "`Wafer.GPIO` not implemented for `#{inspect(unknown)}`"}
+
   def pull_mode(unknown, _pull_mode),
     do: {:error, "`Wafer.GPIO` not implemented for `#{inspect(unknown)}`"}
 end
