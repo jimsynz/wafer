@@ -47,8 +47,14 @@ defimpl Wafer.SPI, for: Wafer.Driver.Circuits.SPI do
 
   def transfer(%{ref: ref} = conn, data) when is_reference(ref) and is_binary(data) do
     case Wrapper.transfer(ref, data) do
-      {:ok, data} -> {:ok, data, conn}
-      {:error, reason} -> {:error, reason}
+      {:ok, read_data} when is_binary(read_data) and byte_size(data) == byte_size(read_data) ->
+        {:ok, read_data, conn}
+
+      {:error, reason} ->
+        {:error, reason}
+
+      other ->
+        {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 end

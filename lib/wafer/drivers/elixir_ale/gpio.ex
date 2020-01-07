@@ -48,19 +48,18 @@ end
 defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALE.GPIO do
   alias Wafer.Driver.ElixirALE.GPIO.Wrapper
   alias Wafer.Driver.ElixirALE.GPIO.Dispatcher
+  import Wafer.Guards
 
   def read(%{pid: pid} = _conn) do
     case Wrapper.read(pid) do
-      value when value in [0, 1] -> {:ok, value}
+      value when is_pin_value(value) -> {:ok, value}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 
-  def write(%{pid: pid} = conn, value) when value in [0, 1] do
-    case Wrapper.write(pid, value) do
-      :ok -> {:ok, conn}
-      {:error, reason} -> {:error, reason}
-    end
+  def write(%{pid: pid} = conn, value) when is_pid(pid) and is_pin_value(value) do
+    with :ok <- Wrapper.write(pid, value), do: {:ok, conn}
   end
 
   def direction(_conn, _direction), do: {:error, :not_supported}

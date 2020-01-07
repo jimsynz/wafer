@@ -57,10 +57,7 @@ defimpl Wafer.Chip, for: Wafer.Driver.Circuits.I2C do
   def write_register(%{ref: ref, address: address} = conn, register_address, data)
       when is_reference(ref) and is_i2c_address(address) and is_register_address(register_address) and
              is_binary(data) do
-    case Wrapper.write(ref, address, <<register_address, data::binary>>) do
-      :ok -> {:ok, conn}
-      {:error, reason} -> {:error, reason}
-    end
+    with :ok <- Wrapper.write(ref, address, <<register_address, data::binary>>), do: {:ok, conn}
   end
 
   def write_register(_conn, _register_address, _data), do: {:error, "Invalid argument"}
@@ -82,23 +79,26 @@ defimpl Wafer.I2C, for: Wafer.Driver.Circuits.I2C do
 
   def read(%{ref: ref, address: address}, bytes, options \\ [])
       when is_reference(ref) and is_i2c_address(address) and is_byte_size(bytes) and
-             is_list(options),
-      do: Wrapper.read(ref, address, bytes, options)
+             is_list(options) do
+    case Wrapper.read(ref, address, bytes, options) do
+      {:ok, data} when is_binary(data) and byte_size(data) == bytes -> {:ok, data}
+      {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
+    end
+  end
 
   def write(%{ref: ref, address: address} = conn, data, options \\ [])
       when is_reference(ref) and is_i2c_address(address) and is_binary(data) and is_list(options) do
-    case Wrapper.write(ref, address, data, options) do
-      :ok -> {:ok, conn}
-      {:error, reason} -> {:error, reason}
-    end
+    with :ok <- Wrapper.write(ref, address, data, options), do: {:ok, conn}
   end
 
   def write_read(%{ref: ref, address: address} = conn, data, bytes, options \\ [])
       when is_reference(ref) and is_i2c_address(address) and is_binary(data) and
              is_byte_size(bytes) and is_list(options) do
     case Wrapper.write_read(ref, address, data, bytes, options) do
-      {:ok, data} -> {:ok, data, conn}
+      {:ok, data} when is_binary(data) and byte_size(data) == bytes -> {:ok, data, conn}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 
@@ -106,6 +106,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.Circuits.I2C do
     case Wrapper.detect_devices(ref) do
       devices when is_list(devices) -> {:ok, devices}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 end

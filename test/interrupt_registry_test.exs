@@ -3,6 +3,12 @@ defmodule WaferInterruptRegistryTest do
   alias Wafer.InterruptRegistry, as: IR
   @moduledoc false
 
+  setup do
+    Supervisor.terminate_child(Wafer.Supervisor, IR)
+    Supervisor.restart_child(Wafer.Supervisor, IR)
+    {:ok, []}
+  end
+
   describe "subscribe/3" do
     test "it subscibes the caller with `nil` metadata" do
       self = self()

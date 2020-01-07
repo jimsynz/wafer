@@ -55,14 +55,12 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
     case(Wrapper.read(ref)) do
       value when is_pin_value(value) -> {:ok, value}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 
   def write(%{ref: ref} = conn, value) when is_reference(ref) and is_pin_value(value) do
-    case(Wrapper.write(ref, value)) do
-      :ok -> {:ok, conn}
-      {:error, reason} -> {:error, reason}
-    end
+    with :ok <- Wrapper.write(ref, value), do: {:ok, conn}
   end
 
   def direction(%{direction: :in} = conn, :in), do: {:ok, conn}
@@ -70,12 +68,9 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
 
   def direction(%{ref: ref} = conn, direction)
       when is_reference(ref) and is_pin_direction(direction) do
-    pin_dir = String.to_atom(Enum.join([direction, "put"], ""))
-
-    case(Wrapper.set_direction(ref, pin_dir)) do
-      :ok -> {:ok, %{conn | direction: direction}}
-      {:error, reason} -> {:error, reason}
-    end
+    with pin_dir <- translate_pin_direction(direction),
+         :ok <- Wrapper.set_direction(ref, pin_dir),
+         do: {:ok, %{conn | direction: direction}}
   end
 
   def enable_interrupt(conn, pin_condition, metadata \\ nil)
@@ -88,11 +83,11 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
   end
 
   def pull_mode(%{ref: ref} = conn, mode) when is_reference(ref) and is_pin_pull_mode(mode) do
-    case Wrapper.set_pull_mode(ref, mode) do
-      :ok -> {:ok, conn}
-      {:error, reason} -> {:error, reason}
-    end
+    with :ok <- Wrapper.set_pull_mode(ref, mode), do: {:ok, conn}
   end
+
+  defp translate_pin_direction(:in), do: :input
+  defp translate_pin_direction(:out), do: :output
 end
 
 defimpl Wafer.DeviceID, for: Wafer.Driver.Circuits.GPIO do

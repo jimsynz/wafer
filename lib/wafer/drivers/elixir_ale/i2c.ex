@@ -50,8 +50,9 @@ defimpl Wafer.Chip, for: Wafer.Driver.ElixirALE.I2C do
   def read_register(%{pid: pid}, register_address, bytes)
       when is_pid(pid) and is_register_address(register_address) and is_byte_size(bytes) do
     case Wrapper.write_read(pid, <<register_address>>, bytes) do
-      data when is_binary(data) -> {:ok, data}
+      data when is_binary(data) and byte_size(data) == bytes -> {:ok, data}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 
@@ -59,10 +60,7 @@ defimpl Wafer.Chip, for: Wafer.Driver.ElixirALE.I2C do
 
   def write_register(%{pid: pid} = conn, register_address, data)
       when is_pid(pid) and is_register_address(register_address) and is_binary(data) do
-    case Wrapper.write(pid, <<register_address, data::binary>>) do
-      :ok -> {:ok, conn}
-      {:error, reason} -> {:error, reason}
-    end
+    with :ok <- Wrapper.write(pid, <<register_address, data::binary>>), do: {:ok, conn}
   end
 
   def write_register(_conn, _register_address, _data), do: {:error, "Invalid argument"}
@@ -85,24 +83,23 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALE.I2C do
   def read(%{pid: pid}, bytes, options \\ [])
       when is_pid(pid) and is_byte_size(bytes) and is_list(options) do
     case Wrapper.read(pid, bytes) do
-      data when is_binary(data) -> {:ok, data}
+      data when is_binary(data) and byte_size(data) == bytes -> {:ok, data}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 
   def write(%{pid: pid} = conn, data, options \\ [])
       when is_pid(pid) and is_binary(data) and is_list(options) do
-    case Wrapper.write(pid, data) do
-      :ok -> {:ok, conn}
-      {:error, reason} -> {:error, reason}
-    end
+    with :ok <- Wrapper.write(pid, data), do: {:ok, conn}
   end
 
   def write_read(%{pid: pid} = conn, data, bytes, options \\ [])
       when is_pid(pid) and is_binary(data) and is_byte_size(bytes) and is_list(options) do
     case Wrapper.write_read(pid, data, bytes) do
-      data when is_binary(data) -> {:ok, data, conn}
+      data when is_binary(data) and byte_size(data) == bytes -> {:ok, data, conn}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 
@@ -110,6 +107,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALE.I2C do
     case Wrapper.detect_devices(pid) do
       devices when is_list(devices) -> {:ok, devices}
       {:error, reason} -> {:error, reason}
+      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 end

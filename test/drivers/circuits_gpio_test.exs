@@ -73,12 +73,12 @@ defmodule WaferDriverCircuits.GPIOTest do
       Wrapper
       |> reject(:set_direction, 2)
 
-      assert {:ok, %Subject{} = conn} = Subject.acquire(pin: 1, direction: :out)
+      conn = conn(direction: :out)
       assert {:ok, ^conn} = GPIO.direction(conn, :out)
     end
 
     test "when the direction is changing" do
-      assert {:ok, %Subject{} = conn} = Subject.acquire(pin: 1, direction: :out)
+      conn = conn(direction: :out)
 
       Wrapper
       |> expect(:set_direction, 1, fn ref, direction ->

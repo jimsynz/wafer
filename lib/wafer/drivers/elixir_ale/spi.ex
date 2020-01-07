@@ -48,8 +48,14 @@ defimpl Wafer.SPI, for: Wafer.Driver.ElixirALE.SPI do
 
   def transfer(%{pid: pid} = conn, data) when is_pid(pid) and is_binary(data) do
     case Wrapper.transfer(pid, data) do
-      data when is_binary(data) -> {:ok, data, conn}
-      {:error, reason} -> {:error, reason}
+      read_data when is_binary(read_data) and byte_size(read_data) == byte_size(data) ->
+        {:ok, read_data, conn}
+
+      {:error, reason} ->
+        {:error, reason}
+
+      other ->
+        {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 end
