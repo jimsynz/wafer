@@ -6,6 +6,8 @@ defmodule Wafer.Registers do
 
   This can be a massive time saver, and means you can basically just copy them
   straight out of the datasheet.
+
+  See the documentation for `defregister/4` for more information.
   """
   alias Wafer.Chip
   alias Wafer.Conn
@@ -20,8 +22,8 @@ defmodule Wafer.Registers do
     end
   end
 
-  @doc """
-  Define a registers.
+  @doc ~S"""
+  Define functions for interacting with a device register.
 
   ## Parameters
     - `name` - name of the register.
@@ -31,17 +33,84 @@ defmodule Wafer.Registers do
 
   ## Examples
 
+  ### Read-only registers
+
+  Define a read-only register named `status` at address `0x03` which is a single
+  byte wide:
+
       iex> defregister(:status, 0x03, :ro, 1)
 
-      iex> defregister(:config, 0x01, :rw, 2)
+  This will define the following function along with documentation and
+  typespecs:
 
-      iex> defregister(:int_en, 0x02, :wo, 1)
+  ```elixir
+  def read_status(conn), do: Chip.read_register(conn, 0x03, 1)
+  ```
+
+  ### Write-only registers
+
+  Define a write-only register named `int_en` at address `0x02` which is 2 bytes
+  wide:
+
+      iex> defregister(:int_en, 0x02, :wo, 2)
+
+  This will define the following functions along with documentation and
+  typespecs:
+
+  ```elixir
+  def write_int_en(conn, data)
+      when is_binary(data) and byte_size(data) == 2,
+      do: Chip.write_register(conn, 0x2, data)
+
+  def write_int_en(_conn, data),
+      do: {:error, "Argument error: #{inspect(data)}"}
+  ```
+
+  ### Read-write registers.
+
+  Define a read-write register named `config` at address `0x01`.
+
+      iex> defregister(:config, 0x01, :rw, 1)
+
+  In addition to defining `read_config/1` and `write_config/2` as per the
+  examples above it will also generate the following functions along with
+  documentation and typespecs:
+
+  ```elixir
+  def swap_config(conn, data)
+      when is_binary(data) and byte_size(data) == 1,
+      do: Chip.swap_register(conn, 0x01, data)
+
+  def swap_config(_conn, data),
+      do: {:error, "Argument error: #{inspect(data)}"}
+
+  def update_config(conn, callback)
+      when is_function(callback, 1) do
+        with {:ok, data} <- Chip.read_register(conn, 0x01, 1),
+             new_data when is_binary(new_data) and byte_size(new_data) == 1 <- callback.(data),
+             {:ok, conn} <- Chip.write_regsiter(conn, 0x01, new_data),
+             do: {:ok, conn}
+      end
+
+  def update_config(_conn, _callback),
+      do: {:error, "Argument error: callback should be an arity 1 function"}
+  ```
 
   """
   defmacro defregister(name, register_address, :ro, bytes)
            when is_atom(name) and is_integer(register_address) and register_address >= 0 and
                   is_integer(bytes) and bytes >= 0 do
+    empty_bytes = 1..bytes |> Enum.map(fn _ -> 0 end) |> Enum.join(", ")
+
     quote do
+      @doc """
+      Read the contents of the `#{unquote(name)}` register.
+
+      ## Example
+
+          iex> read_#{unquote(name)}(conn)
+          {:ok, <<#{unquote(empty_bytes)}>>}
+      """
       @spec unquote(:"read_#{name}")(Conn.t()) :: {:ok, binary} | {:error, reason :: any}
       def unquote(:"read_#{name}")(conn),
         do: Chip.read_register(conn, unquote(register_address), unquote(bytes))
@@ -51,8 +120,19 @@ defmodule Wafer.Registers do
   defmacro defregister(name, register_address, :wo, bytes)
            when is_atom(name) and is_integer(register_address) and register_address >= 0 and
                   is_integer(bytes) and bytes >= 0 do
+    empty_bytes = 1..bytes |> Enum.map(fn _ -> 0 end) |> Enum.join(", ")
+
     quote do
-      @spec unquote(:"write_#{name}")(Conn.t(), data :: binary) :: :ok | {:error, reason :: any}
+      @doc """
+      Write new contents to the `#{unquote(name)}` register.
+
+      ## Example
+
+          iex> write_#{unquote(name)}(conn, <<#{unquote(empty_bytes)}>>)
+          {:ok, _conn}
+      """
+      @spec unquote(:"write_#{name}")(Conn.t(), data :: binary) ::
+              {:ok, Conn.t()} | {:error, reason :: any}
       def unquote(:"write_#{name}")(conn, data)
           when is_binary(data) and byte_size(data) == unquote(bytes),
           do: Chip.write_register(conn, unquote(register_address), data)
@@ -64,44 +144,89 @@ defmodule Wafer.Registers do
   defmacro defregister(name, register_address, :rw, bytes)
            when is_atom(name) and is_integer(register_address) and register_address >= 0 and
                   is_integer(bytes) and bytes >= 0 do
+    empty_bytes = 1..bytes |> Enum.map(fn _ -> 0 end) |> Enum.join(", ")
+    bits = bytes * 8
+
     quote do
+      @doc """
+      Read the contents of the `#{unquote(name)}` register.
+
+      ## Example
+
+          iex> read_#{unquote(name)}(conn)
+          {:ok, <<#{unquote(empty_bytes)}>>}
+      """
       @spec unquote(:"read_#{name}")(Conn.t()) :: {:ok, binary} | {:error, reason :: any}
       def unquote(:"read_#{name}")(conn),
         do: Chip.read_register(conn, unquote(register_address), unquote(bytes))
 
-      @spec unquote(:"write_#{name}")(Conn.t(), data :: binary) :: :ok | {:error, reason :: any}
+      @doc """
+      Write new contents to the `#{unquote(name)}` register.
+
+      ## Example
+
+          iex> write_#{unquote(name)}(conn, <<#{unquote(empty_bytes)}>>)
+          {:ok, _conn}
+      """
+      @spec unquote(:"write_#{name}")(Conn.t(), data :: binary) ::
+              {:ok, Conn.t()} | {:error, reason :: any}
       def unquote(:"write_#{name}")(conn, data)
           when is_binary(data) and byte_size(data) == unquote(bytes),
           do: Chip.write_register(conn, unquote(register_address), data)
 
       def unquote(:"write_#{name}")(_conn, data), do: {:error, "Argument error: #{inspect(data)}"}
 
+      @doc """
+      Swap the contents of the `#{unquote(name)}` register.
+
+      Reads the contents of the register, then replaces it, returning the
+      previous contents.  Some drivers may implement this atomically.
+
+      ## Example
+
+          iex> swap_#{unquote(name)}(conn, <<#{unquote(empty_bytes)}>>)
+          {:ok, <<#{unquote(empty_bytes)}>>, _conn}
+      """
       @spec unquote(:"swap_#{name}")(Conn.t(), data :: binary) ::
-              :ok | {:error, reason :: any}
+              {:ok, Conn.t()} | {:error, reason :: any}
       def unquote(:"swap_#{name}")(conn, data)
           when is_binary(data) and byte_size(data) == unquote(bytes),
           do: Chip.swap_register(conn, unquote(register_address), data)
 
+      def unquote(:"swap_#{name}")(_conn, data), do: {:error, "Argument error: #{inspect(data)}"}
+
+      @doc """
+      Update the contents of the `#{unquote(name)}` register using a
+      transformation function.
+
+      ## Example
+
+          iex> transform = fn <<data::size(#{unquote(bits)})>> -> <<(data * 2)::size(#{
+        unquote(bits)
+      })>> end
+          ...> update_#{unquote(name)}(conn, transform)
+          {:ok, _conn}
+      """
       @spec unquote(:"update_#{name}")(
               Conn.t(),
-              (<<_::_*unquote(bytes * 8)>> -> <<_::_*unquote(bytes * 8)>>)
-            ) :: :ok | {:error, reason :: any}
+              (<<_::_*unquote(bits)>> -> <<_::_*unquote(bits)>>)
+            ) :: {:ok, Conn.t()} | {:error, reason :: any}
       def unquote(:"update_#{name}")(conn, callback) when is_function(callback, 1) do
         with {:ok, old_data} <-
                Chip.read_register(conn, unquote(register_address), unquote(bytes)),
              new_data when is_binary(new_data) and byte_size(new_data) == unquote(bytes) <-
                callback.(old_data),
-             :ok <- Chip.write_register(conn, unquote(register_address), new_data),
-             do: :ok
+             {:ok, conn} <- Chip.write_register(conn, unquote(register_address), new_data),
+             do: {:ok, conn}
       end
 
-      def unquote(:"update_#{name}")(_conn, callback),
+      def unquote(:"update_#{name}")(_conn, _callback),
         do: {:error, "Argument error: callback should be an arity 1 function"}
     end
   end
 
   @doc """
-  Define a register with common defaults:
+  Define functions for interacting with a device register with common defaults.
 
   ## Examples
 

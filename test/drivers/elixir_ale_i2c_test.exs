@@ -1,9 +1,9 @@
 defmodule WaferElixirALE.I2CTest do
   use ExUnit.Case, async: true
   use Mimic
-  alias Wafer.Driver.ElixirALE.I2C.Wrapper
   alias Wafer.Chip
   alias Wafer.Driver.ElixirALE.I2C, as: Subject
+  alias Wafer.Driver.ElixirALE.I2C.Wrapper
   alias Wafer.I2C
   @moduledoc false
 

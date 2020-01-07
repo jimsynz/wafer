@@ -1,9 +1,9 @@
 defmodule WaferDriverCircuits.GPIOTest do
   use ExUnit.Case, async: true
   use Mimic
-  alias Wafer.Driver.Circuits.GPIO.Wrapper
   alias Wafer.Driver.Circuits.GPIO, as: Subject
   alias Wafer.Driver.Circuits.GPIO.Dispatcher, as: Dispatcher
+  alias Wafer.Driver.Circuits.GPIO.Wrapper
   alias Wafer.GPIO, as: GPIO
   @moduledoc false
 
@@ -74,7 +74,7 @@ defmodule WaferDriverCircuits.GPIOTest do
       |> reject(:set_direction, 2)
 
       assert {:ok, %Subject{} = conn} = Subject.acquire(pin: 1, direction: :out)
-      assert {:ok, %Subject{}} = GPIO.direction(conn, :out)
+      assert {:ok, ^conn} = GPIO.direction(conn, :out)
     end
 
     test "when the direction is changing" do
@@ -87,7 +87,8 @@ defmodule WaferDriverCircuits.GPIOTest do
         :ok
       end)
 
-      assert {:ok, %Subject{}} = GPIO.direction(conn, :in)
+      assert {:ok, conn} = GPIO.direction(conn, :in)
+      assert conn.direction == :in
     end
   end
 
@@ -132,7 +133,7 @@ defmodule WaferDriverCircuits.GPIOTest do
         :ok
       end)
 
-      assert {:ok, %Subject{}} = GPIO.pull_mode(conn, :pull_up)
+      assert {:ok, ^conn} = GPIO.pull_mode(conn, :pull_up)
     end
   end
 

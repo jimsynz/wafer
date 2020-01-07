@@ -1,8 +1,8 @@
 defmodule WaferElixirALE.SPITest do
   use ExUnit.Case, async: true
   use Mimic
-  alias Wafer.Driver.ElixirALE.SPI.Wrapper
   alias Wafer.Driver.ElixirALE.SPI, as: Subject
+  alias Wafer.Driver.ElixirALE.SPI.Wrapper
   alias Wafer.SPI
   @moduledoc false
 

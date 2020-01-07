@@ -1,7 +1,7 @@
 defmodule WaferDriverElixirALE.GPIO.DispatcherTest do
   use ExUnit.Case, async: true
-  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
   alias Wafer.Driver.ElixirALE.GPIO.Dispatcher, as: Dispatcher
+  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
   alias Wafer.InterruptRegistry, as: IR
   import Mimic
   @moduledoc false
