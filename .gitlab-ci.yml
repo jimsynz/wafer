@@ -44,3 +44,13 @@ pages:
       - public
   only:
     - master
+
+package:
+  stage: deploy
+  only:
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  script:
+    - mix hex.build
+  artifacts:
+    paths:
+      - "wafer-*.tar"
