@@ -8,8 +8,8 @@ defmodule Wafer.Application do
   def start(_type, _args) do
     children = [
       {Registry, [keys: :duplicate, name: Wafer.InterruptRegistry]},
-      Wafer.Driver.ElixirALEGPIODispatcher,
-      Wafer.Driver.CircuitsGPIODispatcher
+      Wafer.Driver.ElixirALE.GPIO.Dispatcher,
+      Wafer.Driver.Circuits.GPIO.Dispatcher
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

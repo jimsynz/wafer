@@ -1,7 +1,7 @@
-defmodule WaferDriverElixirALEGPIODispatcherTest do
+defmodule WaferDriverElixirALE.GPIO.DispatcherTest do
   use ExUnit.Case, async: true
-  alias ElixirALE.GPIO, as: Driver
-  alias Wafer.Driver.ElixirALEGPIODispatcher, as: Dispatcher
+  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
+  alias Wafer.Driver.ElixirALE.GPIO.Dispatcher, as: Dispatcher
   alias Wafer.InterruptRegistry, as: IR
   import Mimic
   @moduledoc false
@@ -10,7 +10,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
     test "enabling rising interrupts" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:set_int, 1, fn pid, pin_condition ->
         assert pid == conn.pid
         assert pin_condition == :rising
@@ -26,7 +26,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
     test "enabling falling interrupts" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:set_int, 1, fn pid, pin_condition ->
         assert pid == conn.pid
         assert pin_condition == :falling
@@ -42,7 +42,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
     test "enabling both interrupts" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:set_int, 1, fn pid, pin_condition ->
         assert pid == conn.pid
         assert pin_condition == :both
@@ -58,7 +58,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
     test "disabling rising interrupts" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> stub(:set_int, fn _, _ -> :ok end)
 
       Dispatcher.handle_call({:enable, conn, :rising, :metadata, self()}, nil, state())
@@ -72,7 +72,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
     test "disabling falling interrupts" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> stub(:set_int, fn _, _ -> :ok end)
 
       Dispatcher.handle_call({:enable, conn, :falling, :metadata, self()}, nil, state())
@@ -86,7 +86,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
     test "disabling both interrupts" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> stub(:set_int, fn _, _ -> :ok end)
 
       Dispatcher.handle_call({:enable, conn, :both, :metadata, self()}, nil, state())
@@ -100,7 +100,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
 
   describe "handle_info/2" do
     test "publishing rising interrupts" do
-      Driver
+      Wrapper
       |> stub(:set_int, fn _, _ -> :ok end)
 
       {:reply, {:ok, conn}, state} =
@@ -112,7 +112,7 @@ defmodule WaferDriverElixirALEGPIODispatcherTest do
     end
 
     test "publishing falling interrupts" do
-      Driver
+      Wrapper
       |> stub(:set_int, fn _, _ -> :ok end)
 
       {:reply, {:ok, conn}, state} =

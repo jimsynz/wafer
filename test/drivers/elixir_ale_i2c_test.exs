@@ -1,9 +1,9 @@
-defmodule WaferElixirALEI2CTest do
+defmodule WaferElixirALE.I2CTest do
   use ExUnit.Case, async: true
   use Mimic
-  alias ElixirALE.I2C, as: Driver
+  alias Wafer.Driver.ElixirALE.I2C.Wrapper
   alias Wafer.Chip
-  alias Wafer.Driver.ElixirALEI2C, as: Subject
+  alias Wafer.Driver.ElixirALE.I2C, as: Subject
   alias Wafer.I2C
   @moduledoc false
 
@@ -13,7 +13,7 @@ defmodule WaferElixirALEI2CTest do
       busname = "i2c-1"
       address = 0x13
 
-      Driver
+      Wrapper
       |> expect(:start_link, 1, fn bus, address ->
         assert bus == busname
         assert address == 0x13
@@ -32,7 +32,7 @@ defmodule WaferElixirALEI2CTest do
       busname = "i2c-1"
       address = 0x13
 
-      Driver
+      Wrapper
       |> expect(:start_link, 1, fn bus, address ->
         assert bus == busname
         assert address == 0x13
@@ -51,7 +51,7 @@ defmodule WaferElixirALEI2CTest do
       busname = "i2c-1"
       address = 0x13
 
-      Driver
+      Wrapper
       |> expect(:start_link, 1, fn bus, address ->
         assert bus == busname
         assert address == 0x13
@@ -79,7 +79,7 @@ defmodule WaferElixirALEI2CTest do
     test "closes the bus connection" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:release, 1, fn pid ->
         assert pid == conn.pid
         :ok
@@ -93,7 +93,7 @@ defmodule WaferElixirALEI2CTest do
     test "reads from the device's register" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write_read, 1, fn pid, data, bytes ->
         assert pid == conn.pid
         assert data == <<0>>
@@ -109,7 +109,7 @@ defmodule WaferElixirALEI2CTest do
     test "writes to the device's register" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn pid, data ->
         assert pid == conn.pid
         assert data == <<1, 2, 3>>
@@ -124,7 +124,7 @@ defmodule WaferElixirALEI2CTest do
     test "swaps the device's register value for a new value, returning the old value" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write_read, 1, fn pid, data, bytes ->
         assert pid == conn.pid
         assert data == <<0>>
@@ -132,7 +132,7 @@ defmodule WaferElixirALEI2CTest do
         <<0, 0>>
       end)
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn pid, data ->
         assert pid == conn.pid
         assert data == <<0, 1, 1>>
@@ -147,7 +147,7 @@ defmodule WaferElixirALEI2CTest do
     test "reads from the device" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:read, 1, fn pid, bytes ->
         assert pid == conn.pid
         assert bytes == 2
@@ -162,7 +162,7 @@ defmodule WaferElixirALEI2CTest do
     test "it writes to the device" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn pid, data ->
         assert pid == conn.pid
         assert data == <<0, 0>>
@@ -177,7 +177,7 @@ defmodule WaferElixirALEI2CTest do
     test "it writes to then reads from the device" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write_read, 1, fn pid, data, bytes ->
         assert pid == conn.pid
         assert data == <<1>>
@@ -194,7 +194,7 @@ defmodule WaferElixirALEI2CTest do
     test "it detects devices" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:detect_devices, 1, fn pid ->
         assert conn.pid == pid
         [conn.address]

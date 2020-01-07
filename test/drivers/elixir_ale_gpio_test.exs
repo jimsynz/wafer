@@ -1,15 +1,15 @@
-defmodule WaferDriverElixirALEGPIOTest do
+defmodule WaferDriverElixirALE.GPIOTest do
   use ExUnit.Case, async: true
   use Mimic
-  alias ElixirALE.GPIO, as: Driver
-  alias Wafer.Driver.ElixirALEGPIO, as: Subject
-  alias Wafer.Driver.ElixirALEGPIODispatcher, as: Dispatcher
+  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
+  alias Wafer.Driver.ElixirALE.GPIO, as: Subject
+  alias Wafer.Driver.ElixirALE.GPIO.Dispatcher, as: Dispatcher
   alias Wafer.GPIO, as: GPIO
   @moduledoc false
 
   describe "acquire/1" do
     test "opens the pin and creates the conn" do
-      Driver
+      Wrapper
       |> expect(:start_link, 1, fn pin, direction, opts ->
         assert pin == 1
         assert direction == :out
@@ -29,7 +29,7 @@ defmodule WaferDriverElixirALEGPIOTest do
     test "closes the pin" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:release, 1, fn pid ->
         assert pid == conn.pid
         :ok
@@ -43,7 +43,7 @@ defmodule WaferDriverElixirALEGPIOTest do
     test "can read the pin value" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:read, 1, fn pid ->
         assert pid == conn.pid
         0
@@ -57,7 +57,7 @@ defmodule WaferDriverElixirALEGPIOTest do
     test "can set the pin value" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn pid, value ->
         assert pid == conn.pid
         assert value == 1

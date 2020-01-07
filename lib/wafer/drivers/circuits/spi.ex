@@ -1,7 +1,7 @@
-defmodule Wafer.Driver.CircuitsSPI do
+defmodule Wafer.Driver.Circuits.SPI do
   defstruct ~w[bus ref]a
   @behaviour Wafer.Conn
-  alias Circuits.SPI, as: Driver
+  alias Wafer.Driver.Circuits.SPI.Wrapper
 
   @moduledoc """
   A connection to a chip via Circuits's SPI driver.
@@ -27,7 +27,7 @@ defmodule Wafer.Driver.CircuitsSPI do
   @spec acquire(options) :: {:ok, t} | {:error, reason :: any}
   def acquire(opts) when is_list(opts) do
     with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
-         {:ok, ref} when is_reference(ref) <- Driver.open(bus, Keyword.delete(opts, :bus_name)) do
+         {:ok, ref} when is_reference(ref) <- Wrapper.open(bus, Keyword.delete(opts, :bus_name)) do
       {:ok, %__MODULE__{bus: bus, ref: ref}}
     else
       :error -> {:error, "Circuits.SPI requires a `bus_name` option"}
@@ -39,20 +39,20 @@ defmodule Wafer.Driver.CircuitsSPI do
   Close the SPI bus connection.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Driver.close(ref)
+  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Wrapper.close(ref)
 end
 
-defimpl Wafer.SPI, for: Wafer.Driver.CircuitsSPI do
-  alias Circuits.SPI, as: Driver
+defimpl Wafer.SPI, for: Wafer.Driver.Circuits.SPI do
+  alias Wafer.Driver.Circuits.SPI.Wrapper
 
   def transfer(%{ref: ref} = conn, data) when is_reference(ref) and is_binary(data) do
-    case Driver.transfer(ref, data) do
+    case Wrapper.transfer(ref, data) do
       {:ok, data} -> {:ok, data, conn}
       {:error, reason} -> {:error, reason}
     end
   end
 end
 
-defimpl Wafer.DeviceID, for: Wafer.Driver.CircuitsSPI do
-  def id(%{bus: bus}), do: {Wafer.Driver.CircuitsSPI, bus}
+defimpl Wafer.DeviceID, for: Wafer.Driver.Circuits.SPI do
+  def id(%{bus: bus}), do: {Wafer.Driver.Circuits.SPI, bus}
 end

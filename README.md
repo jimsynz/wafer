@@ -50,7 +50,7 @@ end
 I've included stub implementations of the parts of `ElixirALE` and `Circuits`
 that are interacted with by this project, so the tests should run and pass on
 machines without physical hardware interfaces.  If you have a Raspberry Pi with
-a Pi Sense Hat connected you can run the tests with the `FAKE_DRIVERS=false`
+a Pi Sense Hat connected you can run the tests with the `SENSE_HAT_PRESENT=true`
 environment variable set and it will perform integration tests with two of the
 sensors on this device.
 

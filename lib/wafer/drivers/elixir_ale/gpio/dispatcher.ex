@@ -1,7 +1,7 @@
-defmodule Wafer.Driver.ElixirALEGPIODispatcher do
+defmodule Wafer.Driver.ElixirALE.GPIO.Dispatcher do
   use GenServer
   alias __MODULE__
-  alias ElixirALE.GPIO, as: Driver
+  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
   alias Wafer.{Conn, GPIO, InterruptRegistry}
 
   @allowed_pin_conditions ~w[rising falling both]a
@@ -13,21 +13,21 @@ defmodule Wafer.Driver.ElixirALEGPIODispatcher do
 
   @doc false
   def start_link(opts),
-    do: GenServer.start_link(__MODULE__, [opts], name: ElixirALEGPIODispatcher)
+    do: GenServer.start_link(__MODULE__, [opts], name: Dispatcher)
 
   @doc """
   Enable interrupts for this connection using the specified pin_condition.
   """
   @spec enable(Conn.t(), GPIO.pin_condition(), any) :: {:ok, Conn.t()} | {:error, reason :: any}
   def enable(conn, pin_condition, metadata) when pin_condition in @allowed_pin_conditions,
-    do: GenServer.call(ElixirALEGPIODispatcher, {:enable, conn, pin_condition, metadata, self()})
+    do: GenServer.call(Dispatcher, {:enable, conn, pin_condition, metadata, self()})
 
   @doc """
   Disable interrupts for this connection on the specified pin_condition.
   """
   @spec disable(Conn.t(), GPIO.pin_condition()) :: {:ok, Conn.t()} | {:error, reason :: any}
   def disable(conn, pin_condition) when pin_condition in @allowed_pin_conditions,
-    do: GenServer.call(ElixirALEGPIODispatcher, {:disable, conn, pin_condition})
+    do: GenServer.call(Dispatcher, {:disable, conn, pin_condition})
 
   @impl true
   def init(_opts) do
@@ -41,7 +41,7 @@ defmodule Wafer.Driver.ElixirALEGPIODispatcher do
         state
       )
       when pin_condition in @allowed_pin_conditions do
-    with :ok <- Driver.set_int(pid, pin_condition),
+    with :ok <- Wrapper.set_int(pid, pin_condition),
          :ok <- InterruptRegistry.subscribe(key(pin), pin_condition, conn, metadata, receiver) do
       {:reply, {:ok, conn}, state}
     else

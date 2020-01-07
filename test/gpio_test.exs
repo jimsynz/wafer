@@ -1,8 +1,8 @@
 defmodule WaferGPIOTest do
   use ExUnit.Case, async: true
-  alias Wafer.Driver.CircuitsGPIO, as: Driver
+  alias Wafer.Driver.Circuits.GPIO, as: Driver
   alias Wafer.GPIO
-  alias Wafer.GPIO.Wafer.Driver.CircuitsGPIO, as: Impl
+  alias Wafer.GPIO.Wafer.Driver.Circuits.GPIO, as: Impl
   import Mimic
   Code.require_file("test/support/test_utils.exs")
   @moduledoc false

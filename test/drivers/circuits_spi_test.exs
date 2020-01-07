@@ -1,14 +1,14 @@
-defmodule WaferCircuitsSPITest do
+defmodule WaferCircuits.SPITest do
   use ExUnit.Case, async: true
   use Mimic
-  alias Circuits.SPI, as: Driver
-  alias Wafer.Driver.CircuitsSPI, as: Subject
+  alias Wafer.Driver.Circuits.SPI.Wrapper
+  alias Wafer.Driver.Circuits.SPI, as: Subject
   alias Wafer.SPI
   @moduledoc false
 
   describe "acquire/1" do
     test "opens the bus" do
-      Driver
+      Wrapper
       |> expect(:open, 1, fn bus, opts ->
         assert bus == "spidev0.0"
         assert opts == []
@@ -27,7 +27,7 @@ defmodule WaferCircuitsSPITest do
     test "closes the bus connection" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:close, 1, fn ref ->
         assert ref == conn.ref
         :ok
@@ -41,7 +41,7 @@ defmodule WaferCircuitsSPITest do
     test "transfers data to and from the bus" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:transfer, 1, fn ref, data ->
         assert ref == conn.ref
         assert data == <<0, 0>>

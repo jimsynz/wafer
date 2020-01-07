@@ -1,9 +1,9 @@
-defmodule WaferAcceptanceCircuitsI2CDeviceTest do
+defmodule WaferAcceptanceCircuits.I2CDeviceTest do
   use ExUnit.Case, async: true
 
   # Only run acceptance tests if the fake drivers are not loaded.
-  if System.get_env("FAKE_DRIVERS") == "false" do
-    alias Wafer.Driver.CircuitsI2C, as: Driver
+  if System.get_env("SENSE_HAT_PRESENT") == "true" do
+    alias Wafer.Driver.Circuits.I2C, as: Driver
 
     defmodule HTS221 do
       use Wafer.Registers

@@ -1,7 +1,6 @@
-defmodule Wafer.Driver.ElixirALEI2C do
+defmodule Wafer.Driver.ElixirALE.I2C do
   defstruct ~w[address bus pid]a
-  @behaviour Wafer.Conn
-  alias ElixirALE.I2C, as: Driver
+  alias Wafer.Driver.ElixirALE.I2C.Wrapper
   alias Wafer.I2C
   import Wafer.Guards
 
@@ -24,8 +23,8 @@ defmodule Wafer.Driver.ElixirALEI2C do
   def acquire(opts) when is_list(opts) do
     with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
          {:ok, address} when is_i2c_address(address) <- Keyword.fetch(opts, :address),
-         {:ok, pid} <- Driver.start_link(bus, address),
-         devices when is_list(devices) <- Driver.detect_devices(pid),
+         {:ok, pid} <- Wrapper.start_link(bus, address),
+         devices when is_list(devices) <- Wrapper.detect_devices(pid),
          true <- Keyword.get(opts, :force, false) || Enum.member?(devices, address) do
       {:ok, %__MODULE__{bus: bus, address: address, pid: pid}}
     else
@@ -41,16 +40,16 @@ defmodule Wafer.Driver.ElixirALEI2C do
   end
 
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: ElixirALE.I2C.release(pid)
+  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: Wrapper.release(pid)
 end
 
-defimpl Wafer.Chip, for: Wafer.Driver.ElixirALEI2C do
-  alias ElixirALE.I2C, as: Driver
+defimpl Wafer.Chip, for: Wafer.Driver.ElixirALE.I2C do
+  alias Wafer.Driver.ElixirALE.I2C.Wrapper
   import Wafer.Guards
 
   def read_register(%{pid: pid}, register_address, bytes)
       when is_pid(pid) and is_register_address(register_address) and is_byte_size(bytes) do
-    case Driver.write_read(pid, <<register_address>>, bytes) do
+    case Wrapper.write_read(pid, <<register_address>>, bytes) do
       data when is_binary(data) -> {:ok, data}
       {:error, reason} -> {:error, reason}
     end
@@ -60,7 +59,7 @@ defimpl Wafer.Chip, for: Wafer.Driver.ElixirALEI2C do
 
   def write_register(%{pid: pid} = conn, register_address, data)
       when is_pid(pid) and is_register_address(register_address) and is_binary(data) do
-    case Driver.write(pid, <<register_address, data::binary>>) do
+    case Wrapper.write(pid, <<register_address, data::binary>>) do
       :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
     end
@@ -79,13 +78,13 @@ defimpl Wafer.Chip, for: Wafer.Driver.ElixirALEI2C do
   def swap_register(_conn, _register_address, _data), do: {:error, "Invalid argument"}
 end
 
-defimpl Wafer.I2C, for: Wafer.Driver.ElixirALEI2C do
+defimpl Wafer.I2C, for: Wafer.Driver.ElixirALE.I2C do
   import Wafer.Guards
-  alias ElixirALE.I2C, as: Driver
+  alias Wafer.Driver.ElixirALE.I2C.Wrapper
 
   def read(%{pid: pid}, bytes, options \\ [])
       when is_pid(pid) and is_byte_size(bytes) and is_list(options) do
-    case Driver.read(pid, bytes) do
+    case Wrapper.read(pid, bytes) do
       data when is_binary(data) -> {:ok, data}
       {:error, reason} -> {:error, reason}
     end
@@ -93,7 +92,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALEI2C do
 
   def write(%{pid: pid} = conn, data, options \\ [])
       when is_pid(pid) and is_binary(data) and is_list(options) do
-    case Driver.write(pid, data) do
+    case Wrapper.write(pid, data) do
       :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
     end
@@ -101,20 +100,20 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALEI2C do
 
   def write_read(%{pid: pid} = conn, data, bytes, options \\ [])
       when is_pid(pid) and is_binary(data) and is_byte_size(bytes) and is_list(options) do
-    case Driver.write_read(pid, data, bytes) do
+    case Wrapper.write_read(pid, data, bytes) do
       data when is_binary(data) -> {:ok, data, conn}
       {:error, reason} -> {:error, reason}
     end
   end
 
   def detect_devices(%{pid: pid}) do
-    case Driver.detect_devices(pid) do
+    case Wrapper.detect_devices(pid) do
       devices when is_list(devices) -> {:ok, devices}
       {:error, reason} -> {:error, reason}
     end
   end
 end
 
-defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALEI2C do
-  def id(%{address: address, bus: bus}), do: {Wafer.Driver.ElixirALEI2C, bus, address}
+defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALE.I2C do
+  def id(%{address: address, bus: bus}), do: {Wafer.Driver.ElixirALE.I2C, bus, address}
 end

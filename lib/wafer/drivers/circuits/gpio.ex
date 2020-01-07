@@ -1,7 +1,7 @@
-defmodule Wafer.Driver.CircuitsGPIO do
+defmodule Wafer.Driver.Circuits.GPIO do
   defstruct ~w[direction pin ref]a
   @behaviour Wafer.Conn
-  alias Circuits.GPIO, as: Driver
+  alias Wafer.Driver.Circuits.GPIO.Wrapper
   alias Wafer.GPIO
   import Wafer.Guards
 
@@ -29,7 +29,7 @@ defmodule Wafer.Driver.CircuitsGPIO do
     with {:ok, pin} when is_pin_number(pin) <- Keyword.fetch(opts, :pin),
          direction when is_pin_direction(direction) <- Keyword.get(opts, :direction, :out),
          pin_dir <- String.to_atom(Enum.join([direction, "put"], "")),
-         {:ok, ref} <- Driver.open(pin, pin_dir, Keyword.drop(opts, ~w[pin direction]a)) do
+         {:ok, ref} <- Wrapper.open(pin, pin_dir, Keyword.drop(opts, ~w[pin direction]a)) do
       {:ok, %__MODULE__{ref: ref, pin: pin, direction: direction}}
     else
       :error -> {:error, "Circuits.GPIO requires a `pin` option."}
@@ -43,23 +43,23 @@ defmodule Wafer.Driver.CircuitsGPIO do
   Note that other connections may still be using the pin.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Driver.close(ref)
+  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Wrapper.close(ref)
 end
 
-defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
-  alias Wafer.Driver.CircuitsGPIODispatcher
-  alias Circuits.GPIO, as: Driver
+defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
+  alias Wafer.Driver.Circuits.GPIO.Dispatcher
+  alias Wafer.Driver.Circuits.GPIO.Wrapper
   import Wafer.Guards
 
   def read(%{ref: ref}) when is_reference(ref) do
-    case(Driver.read(ref)) do
+    case(Wrapper.read(ref)) do
       value when is_pin_value(value) -> {:ok, value}
       {:error, reason} -> {:error, reason}
     end
   end
 
   def write(%{ref: ref} = conn, value) when is_reference(ref) and is_pin_value(value) do
-    case(Driver.write(ref, value)) do
+    case(Wrapper.write(ref, value)) do
       :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
     end
@@ -72,7 +72,7 @@ defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
       when is_reference(ref) and is_pin_direction(direction) do
     pin_dir = String.to_atom(Enum.join([direction, "put"], ""))
 
-    case(Driver.set_direction(ref, pin_dir)) do
+    case(Wrapper.set_direction(ref, pin_dir)) do
       :ok -> {:ok, %{conn | direction: direction}}
       {:error, reason} -> {:error, reason}
     end
@@ -80,21 +80,21 @@ defimpl Wafer.GPIO, for: Wafer.Driver.CircuitsGPIO do
 
   def enable_interrupt(conn, pin_condition, metadata \\ nil)
       when is_pin_condition(pin_condition) do
-    with :ok <- CircuitsGPIODispatcher.enable(conn, pin_condition, metadata), do: {:ok, conn}
+    with :ok <- Dispatcher.enable(conn, pin_condition, metadata), do: {:ok, conn}
   end
 
   def disable_interrupt(conn, pin_condition) when is_pin_condition(pin_condition) do
-    with :ok <- CircuitsGPIODispatcher.disable(conn, pin_condition), do: {:ok, conn}
+    with :ok <- Dispatcher.disable(conn, pin_condition), do: {:ok, conn}
   end
 
   def pull_mode(%{ref: ref} = conn, mode) when is_reference(ref) and is_pin_pull_mode(mode) do
-    case Driver.set_pull_mode(ref, mode) do
+    case Wrapper.set_pull_mode(ref, mode) do
       :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
     end
   end
 end
 
-defimpl Wafer.DeviceID, for: Wafer.Driver.CircuitsGPIO do
-  def id(%{pin: pin}), do: {Wafer.Driver.CircuitsGPIO, pin}
+defimpl Wafer.DeviceID, for: Wafer.Driver.Circuits.GPIO do
+  def id(%{pin: pin}), do: {Wafer.Driver.Circuits.GPIO, pin}
 end

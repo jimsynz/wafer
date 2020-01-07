@@ -7,8 +7,8 @@ defmodule Wafer.InterruptRegistry do
   This module provides Wafer's interrupt registry.  This allows multiple
   subscribers to be subscribed to interrupts from many different pins.
 
-  It is used by `Driver.CircuitsGPIODispatcher` and
-  `Driver.ElixirALEGPIODispatcher` and you should probably use it if you're
+  It is used by `Driver.Circuits.GPIO.Dispatcher` and
+  `Driver.ElixirALE.GPIO.Dispatcher` and you should probably use it if you're
   writing your own driver which supports sending interrupts to subscribers.
   """
 

@@ -1,15 +1,15 @@
-defmodule WaferDriverCircuitsGPIOTest do
+defmodule WaferDriverCircuits.GPIOTest do
   use ExUnit.Case, async: true
   use Mimic
-  alias Circuits.GPIO, as: Driver
-  alias Wafer.Driver.CircuitsGPIO, as: Subject
-  alias Wafer.Driver.CircuitsGPIODispatcher, as: Dispatcher
+  alias Wafer.Driver.Circuits.GPIO.Wrapper
+  alias Wafer.Driver.Circuits.GPIO, as: Subject
+  alias Wafer.Driver.Circuits.GPIO.Dispatcher, as: Dispatcher
   alias Wafer.GPIO, as: GPIO
   @moduledoc false
 
   describe "acquire/1" do
     test "opens the pin and creates the conn" do
-      Driver
+      Wrapper
       |> expect(:open, 1, fn pin, direction, opts ->
         assert pin == 1
         assert direction == :output
@@ -29,7 +29,7 @@ defmodule WaferDriverCircuitsGPIOTest do
     test "closes the pin" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:close, 1, fn ref ->
         assert ref == conn.ref
         :ok
@@ -43,7 +43,7 @@ defmodule WaferDriverCircuitsGPIOTest do
     test "can read the pin value" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:read, 1, fn ref ->
         assert ref == conn.ref
         0
@@ -57,7 +57,7 @@ defmodule WaferDriverCircuitsGPIOTest do
     test "can set the pin value" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn ref, value ->
         assert ref == conn.ref
         assert value == 1
@@ -70,7 +70,7 @@ defmodule WaferDriverCircuitsGPIOTest do
 
   describe "GPIO.direction/2" do
     test "when the direction isn't changing" do
-      Driver
+      Wrapper
       |> reject(:set_direction, 2)
 
       assert {:ok, %Subject{} = conn} = Subject.acquire(pin: 1, direction: :out)
@@ -80,7 +80,7 @@ defmodule WaferDriverCircuitsGPIOTest do
     test "when the direction is changing" do
       assert {:ok, %Subject{} = conn} = Subject.acquire(pin: 1, direction: :out)
 
-      Driver
+      Wrapper
       |> expect(:set_direction, 1, fn ref, direction ->
         assert ref == conn.ref
         assert direction == :input
@@ -125,7 +125,7 @@ defmodule WaferDriverCircuitsGPIOTest do
     test "sets the specified pull mode on the connection" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:set_pull_mode, 1, fn ref, mode ->
         assert ref == conn.ref
         assert mode == :pull_up

@@ -13,7 +13,6 @@ defmodule Wafer.MixProject do
       app: :wafer,
       version: @version,
       elixir: "~> 1.9",
-      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       package: package(),
       description: @description,
@@ -53,14 +52,4 @@ defmodule Wafer.MixProject do
       {:circuits_spi, "~> 0.1", optional: true}
     ]
   end
-
-  # Load fake versions of the Circuits and ElixirALE modules unless explicitly
-  # told not to.
-  defp elixirc_paths(:test) do
-    if System.get_env("FAKE_DRIVERS") == "false",
-      do: elixirc_paths(nil),
-      else: ["test/support" | elixirc_paths(nil)]
-  end
-
-  defp elixirc_paths(_), do: ["lib"]
 end

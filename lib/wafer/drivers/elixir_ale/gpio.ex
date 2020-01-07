@@ -1,7 +1,7 @@
-defmodule Wafer.Driver.ElixirALEGPIO do
+defmodule Wafer.Driver.ElixirALE.GPIO do
   defstruct ~w[direction pid pin]a
   @behaviour Wafer.Conn
-  alias ElixirALE.GPIO, as: Driver
+  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
   alias Wafer.GPIO
   import Wafer.Guards
 
@@ -28,7 +28,7 @@ defmodule Wafer.Driver.ElixirALEGPIO do
   def acquire(opts) when is_list(opts) do
     with {:ok, pin} when is_pin_number(pin) <- Keyword.fetch(opts, :pin),
          direction when direction in [:in, :out] <- Keyword.get(opts, :direction, :out),
-         {:ok, pid} <- Driver.start_link(pin, direction, Keyword.drop(opts, ~w[pin direction]a)) do
+         {:ok, pid} <- Wrapper.start_link(pin, direction, Keyword.drop(opts, ~w[pin direction]a)) do
       {:ok, %__MODULE__{pid: pid, pin: pin, direction: direction}}
     else
       :error -> {:error, "ElixirALE.GPIO requires a `pin` option."}
@@ -42,22 +42,22 @@ defmodule Wafer.Driver.ElixirALEGPIO do
   Note that other connections may still be using the pin.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid} = _conn), do: Driver.release(pid)
+  def release(%__MODULE__{pid: pid} = _conn), do: Wrapper.release(pid)
 end
 
-defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALEGPIO do
-  alias ElixirALE.GPIO, as: Driver
-  alias Wafer.Driver.ElixirALEGPIODispatcher
+defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALE.GPIO do
+  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
+  alias Wafer.Driver.ElixirALE.GPIO.Dispatcher
 
   def read(%{pid: pid} = _conn) do
-    case Driver.read(pid) do
+    case Wrapper.read(pid) do
       value when value in [0, 1] -> {:ok, value}
       {:error, reason} -> {:error, reason}
     end
   end
 
   def write(%{pid: pid} = conn, value) when value in [0, 1] do
-    case Driver.write(pid, value) do
+    case Wrapper.write(pid, value) do
       :ok -> {:ok, conn}
       {:error, reason} -> {:error, reason}
     end
@@ -66,14 +66,14 @@ defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALEGPIO do
   def direction(_conn, _direction), do: {:error, :not_supported}
 
   def enable_interrupt(conn, pin_condition, metadata \\ nil),
-    do: ElixirALEGPIODispatcher.enable(conn, pin_condition, metadata)
+    do: Dispatcher.enable(conn, pin_condition, metadata)
 
   def disable_interrupt(conn, pin_condition),
-    do: ElixirALEGPIODispatcher.disable(conn, pin_condition)
+    do: Dispatcher.disable(conn, pin_condition)
 
   def pull_mode(_conn, _pull_mode), do: {:error, :not_supported}
 end
 
-defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALEGPIO do
-  def id(%{pin: pin}), do: {Wafer.Driver.ElixirALEGPIO, pin}
+defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALE.GPIO do
+  def id(%{pin: pin}), do: {Wafer.Driver.ElixirALE.GPIO, pin}
 end

@@ -1,14 +1,14 @@
-defmodule WaferElixirALESPITest do
+defmodule WaferElixirALE.SPITest do
   use ExUnit.Case, async: true
   use Mimic
-  alias ElixirALE.SPI, as: Driver
-  alias Wafer.Driver.ElixirALESPI, as: Subject
+  alias Wafer.Driver.ElixirALE.SPI.Wrapper
+  alias Wafer.Driver.ElixirALE.SPI, as: Subject
   alias Wafer.SPI
   @moduledoc false
 
   describe "acquire/1" do
     test "opens the bus" do
-      Driver
+      Wrapper
       |> expect(:start_link, 1, fn bus, spi_opts, opts ->
         assert bus == "spidev0.0"
         assert spi_opts == []
@@ -28,7 +28,7 @@ defmodule WaferElixirALESPITest do
     test "closes the bus connection" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:release, 1, fn pid ->
         assert pid == conn.pid
         :ok
@@ -42,7 +42,7 @@ defmodule WaferElixirALESPITest do
     test "transfers data to and from the bus" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:transfer, 1, fn pid, data ->
         assert pid == conn.pid
         assert data == <<0, 0>>

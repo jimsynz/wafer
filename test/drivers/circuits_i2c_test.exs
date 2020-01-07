@@ -1,9 +1,9 @@
-defmodule WaferCircuitsI2CTest do
+defmodule WaferCircuits.I2CTest do
   use ExUnit.Case, async: true
   use Mimic
-  alias Circuits.I2C, as: Driver
+  alias Wafer.Driver.Circuits.I2C.Wrapper
   alias Wafer.Chip
-  alias Wafer.Driver.CircuitsI2C, as: Subject
+  alias Wafer.Driver.Circuits.I2C, as: Subject
   alias Wafer.I2C
   @moduledoc false
 
@@ -13,7 +13,7 @@ defmodule WaferCircuitsI2CTest do
       busname = "i2c-1"
       address = 0x13
 
-      Driver
+      Wrapper
       |> expect(:open, 1, fn bus ->
         assert bus == busname
         {:ok, busref}
@@ -31,7 +31,7 @@ defmodule WaferCircuitsI2CTest do
       busname = "i2c-1"
       address = 0x13
 
-      Driver
+      Wrapper
       |> expect(:open, 1, fn bus ->
         assert bus == busname
         {:ok, busref}
@@ -49,7 +49,7 @@ defmodule WaferCircuitsI2CTest do
       busname = "i2c-1"
       address = 0x13
 
-      Driver
+      Wrapper
       |> expect(:open, 1, fn bus ->
         assert bus == busname
         {:ok, busref}
@@ -76,7 +76,7 @@ defmodule WaferCircuitsI2CTest do
     test "closes the bus connection" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:close, 1, fn ref ->
         assert ref == conn.ref
         :ok
@@ -90,7 +90,7 @@ defmodule WaferCircuitsI2CTest do
     test "reads from the device's register" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write_read, 1, fn ref, addr, data, bytes ->
         assert ref == conn.ref
         assert addr == conn.address
@@ -107,7 +107,7 @@ defmodule WaferCircuitsI2CTest do
     test "writes to the device's register" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn ref, addr, data ->
         assert ref == conn.ref
         assert addr == conn.address
@@ -123,7 +123,7 @@ defmodule WaferCircuitsI2CTest do
     test "swaps the device's register value for a new value, returning the old value" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write_read, 1, fn ref, addr, data, bytes ->
         assert ref == conn.ref
         assert addr == conn.address
@@ -132,7 +132,7 @@ defmodule WaferCircuitsI2CTest do
         {:ok, <<0, 0>>}
       end)
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn ref, addr, data ->
         assert ref == conn.ref
         assert addr == conn.address
@@ -148,7 +148,7 @@ defmodule WaferCircuitsI2CTest do
     test "reads from the device" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:read, 1, fn ref, addr, bytes, opts ->
         assert ref == conn.ref
         assert addr == conn.address
@@ -165,7 +165,7 @@ defmodule WaferCircuitsI2CTest do
     test "it writes to the device" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write, 1, fn ref, addr, data, opts ->
         assert ref == conn.ref
         assert addr == conn.address
@@ -182,7 +182,7 @@ defmodule WaferCircuitsI2CTest do
     test "it writes to then reads from the device" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:write_read, 1, fn ref, addr, data, bytes, opts ->
         assert ref == conn.ref
         assert addr == conn.address
@@ -201,7 +201,7 @@ defmodule WaferCircuitsI2CTest do
     test "it detects devices" do
       conn = conn()
 
-      Driver
+      Wrapper
       |> expect(:detect_devices, 1, fn ref ->
         assert conn.ref == ref
         [conn.address]

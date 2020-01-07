@@ -1,8 +1,8 @@
 defmodule WaferChipTest do
   use ExUnit.Case, async: true
   alias Wafer.Chip
-  alias Wafer.Chip.Wafer.Driver.CircuitsI2C, as: Impl
-  alias Wafer.Driver.CircuitsI2C, as: Driver
+  alias Wafer.Chip.Wafer.Driver.Circuits.I2C, as: Impl
+  alias Wafer.Driver.Circuits.I2C, as: Driver
   import Mimic
   Code.require_file("test/support/test_utils.exs")
   @moduledoc false

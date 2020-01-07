@@ -1,7 +1,7 @@
-defmodule Wafer.Driver.ElixirALESPI do
+defmodule Wafer.Driver.ElixirALE.SPI do
   defstruct ~w[bus pid]a
   @behaviour Wafer.Conn
-  alias ElixirALE.SPI, as: Driver
+  alias Wafer.Driver.ElixirALE.SPI.Wrapper
 
   @moduledoc """
   A connection to a chip via ElixirALE's SPI driver.
@@ -28,7 +28,7 @@ defmodule Wafer.Driver.ElixirALESPI do
   def acquire(opts) when is_list(opts) do
     with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
          {:ok, pid} when is_pid(pid) <-
-           Driver.start_link(bus, Keyword.delete(opts, :bus_name), []) do
+           Wrapper.start_link(bus, Keyword.delete(opts, :bus_name), []) do
       {:ok, %__MODULE__{bus: bus, pid: pid}}
     else
       :error -> {:error, "ElixirALE.SPI requires a `bus_name` option"}
@@ -40,20 +40,20 @@ defmodule Wafer.Driver.ElixirALESPI do
   Close the SPI bus connection.
   """
   @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: Driver.release(pid)
+  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: Wrapper.release(pid)
 end
 
-defimpl Wafer.SPI, for: Wafer.Driver.ElixirALESPI do
-  alias ElixirALE.SPI, as: Driver
+defimpl Wafer.SPI, for: Wafer.Driver.ElixirALE.SPI do
+  alias Wafer.Driver.ElixirALE.SPI.Wrapper
 
   def transfer(%{pid: pid} = conn, data) when is_pid(pid) and is_binary(data) do
-    case Driver.transfer(pid, data) do
+    case Wrapper.transfer(pid, data) do
       data when is_binary(data) -> {:ok, data, conn}
       {:error, reason} -> {:error, reason}
     end
   end
 end
 
-defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALESPI do
-  def id(%{bus: bus}), do: {Wafer.Driver.ElixirALESPI, bus}
+defimpl Wafer.DeviceID, for: Wafer.Driver.ElixirALE.SPI do
+  def id(%{bus: bus}), do: {Wafer.Driver.ElixirALE.SPI, bus}
 end

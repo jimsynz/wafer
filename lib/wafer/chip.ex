@@ -46,7 +46,7 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c-1", address: 0x68)
+      iex> {:ok, conn} = ElixirALE.I2C.acquire(bus: "i2c-1", address: 0x68)
       ...> Chip.read_register(conn, 0, 1)
       {:ok, <<0>>}
   """
@@ -65,7 +65,7 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c", address: 0x68)
+      iex> {:ok, conn} = ElixirALE.I2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.write_register(conn, 0, <<0>>)
       {:ok, conn}
   """
@@ -90,7 +90,7 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirALEI2C.acquire(bus: "i2c", address: 0x68)
+      iex> {:ok, conn} = ElixirALE.I2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.swap_register(conn, 0, <<1>>)
       {:ok, <<0>>, conn}
   """

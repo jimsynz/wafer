@@ -73,7 +73,7 @@ defprotocol Wafer.GPIO do
   `Wafer` starts it's own `Registry` named `Wafer.InterruptRegistry` which you
   can use to publish your interrupts to using the above format.  The registry
   key is set as follows: `{PublishingModule, pin, pin_condition}`.  You can see
-  examples in the `CircuitsGPIODispatcher` and `ElixirALEGPIODispatcher`
+  examples in the `Circuits.GPIO.Dispatcher` and `ElixirALE.GPIO.Dispatcher`
   modules.
   """
   @spec enable_interrupt(Conn.t(), pin_condition, any) ::

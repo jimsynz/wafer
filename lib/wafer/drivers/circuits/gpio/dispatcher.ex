@@ -1,7 +1,7 @@
-defmodule Wafer.Driver.CircuitsGPIODispatcher do
+defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
   use GenServer
   alias __MODULE__
-  alias Circuits.GPIO, as: Driver
+  alias Wafer.Driver.Circuits.GPIO.Wrapper
   alias Wafer.{Conn, GPIO, InterruptRegistry}
   import Wafer.Guards
 
@@ -15,21 +15,22 @@ defmodule Wafer.Driver.CircuitsGPIODispatcher do
   """
 
   @doc false
-  def start_link(opts), do: GenServer.start_link(__MODULE__, [opts], name: CircuitsGPIODispatcher)
+  def start_link(opts),
+    do: GenServer.start_link(__MODULE__, [opts], name: Dispatcher)
 
   @doc """
   Enable interrupts for this connection using the specified pin_condition.
   """
   @spec enable(Conn.t(), GPIO.pin_condition(), any) :: {:ok, Conn.t()} | {:error, reason :: any}
   def enable(conn, pin_condition, metadata \\ nil) when is_pin_condition(pin_condition),
-    do: GenServer.call(CircuitsGPIODispatcher, {:enable, conn, pin_condition, metadata, self()})
+    do: GenServer.call(Dispatcher, {:enable, conn, pin_condition, metadata, self()})
 
   @doc """
   Disable interrupts for this connection using the specified pin_condition.
   """
   @spec disable(Conn.t(), GPIO.pin_condition()) :: {:ok, Conn.t()} | {:error, reason :: any}
   def disable(conn, pin_condition) when is_pin_condition(pin_condition),
-    do: GenServer.call(CircuitsGPIODispatcher, {:disable, conn, pin_condition})
+    do: GenServer.call(Dispatcher, {:disable, conn, pin_condition})
 
   @impl true
   def init(_opts) do
@@ -44,7 +45,7 @@ defmodule Wafer.Driver.CircuitsGPIODispatcher do
       )
       when is_pin_condition(pin_condition) and is_pid(receiver) and is_reference(ref) and
              is_pin_number(pin) do
-    with :ok <- Driver.set_interrupts(ref, pin_condition),
+    with :ok <- Wrapper.set_interrupts(ref, pin_condition),
          :ok <- InterruptRegistry.subscribe(key(pin), pin_condition, conn, metadata, receiver) do
       {:reply, {:ok, conn}, state}
     else

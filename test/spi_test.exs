@@ -1,8 +1,8 @@
 defmodule WaferSPITest do
   use ExUnit.Case, async: true
-  alias Wafer.Driver.CircuitsSPI, as: Driver
+  alias Wafer.Driver.Circuits.SPI, as: Driver
   alias Wafer.SPI
-  alias Wafer.SPI.Wafer.Driver.CircuitsSPI, as: Impl
+  alias Wafer.SPI.Wafer.Driver.Circuits.SPI, as: Impl
   import Mimic
   Code.require_file("test/support/test_utils.exs")
   @moduledoc false
