@@ -16,7 +16,7 @@ defmodule Wafer.Driver.Fake do
 
   @impl Wafer.Conn
   def acquire(opts) do
-    unless System.get_env("MIX_ENV") == "test",
+    if emit_warning(),
       do: Logger.warn("Creating an instance of `Wafer.Driver.Fake` in a non-test environment.")
 
     {:ok, %__MODULE__{opts: opts}}
@@ -24,6 +24,12 @@ defmodule Wafer.Driver.Fake do
 
   @impl Wafer.Conn
   def release(%__MODULE__{}), do: :ok
+
+  defp emit_warning do
+    :wafer
+    |> Application.get_env(__MODULE__)
+    |> Keyword.get(:warn, false)
+  end
 end
 
 defimpl Wafer.Chip, for: Wafer.Driver.Fake do
