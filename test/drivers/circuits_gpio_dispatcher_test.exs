@@ -6,6 +6,12 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
   import Mimic
   @moduledoc false
 
+  setup do
+    Supervisor.terminate_child(Wafer.Supervisor, IR)
+    Supervisor.restart_child(Wafer.Supervisor, IR)
+    {:ok, []}
+  end
+
   describe "handle_call/3" do
     test "enabling rising interrupts" do
       conn = conn()
