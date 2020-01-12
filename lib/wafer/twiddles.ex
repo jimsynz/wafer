@@ -71,6 +71,12 @@ defmodule Wafer.Twiddles do
   def set_bit(byte, bit_number, 0) when is_byte(byte) and is_bit_number(bit_number),
     do: clear_bit(byte, bit_number)
 
+  def set_bit(byte, bit_number, true) when is_bit_number(bit_number),
+    do: set_bit(byte, bit_number, 1)
+
+  def set_bit(byte, bit_number, false) when is_bit_number(bit_number),
+    do: set_bit(byte, bit_number, 0)
+
   def set_bit(<<byte>>, bit_number, value) when value in [0, 1],
     do: <<set_bit(byte, bit_number, value)>>
 
