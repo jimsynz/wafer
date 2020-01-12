@@ -4,7 +4,7 @@ defmodule WaferElixirALE.I2CTest do
   alias Wafer.Chip
   alias Wafer.Driver.ElixirALE.I2C, as: Subject
   alias Wafer.Driver.ElixirALE.I2C.Wrapper
-  alias Wafer.{Release, I2C}
+  alias Wafer.{I2C, Release}
   @moduledoc false
 
   describe "acquire/1" do
