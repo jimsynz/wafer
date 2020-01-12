@@ -20,6 +20,13 @@ test:
   script:
     - mix test
 
+integrate:
+  stage: test
+  tags:
+    - sense-hat
+  script:
+    - SENSE_HAT_PRESENT=true mix test
+
 credo:
   stage: test
   script:
