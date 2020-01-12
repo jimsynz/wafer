@@ -4,7 +4,7 @@ defmodule WaferCircuits.I2CTest do
   alias Wafer.Chip
   alias Wafer.Driver.Circuits.I2C, as: Subject
   alias Wafer.Driver.Circuits.I2C.Wrapper
-  alias Wafer.I2C
+  alias Wafer.{Release, I2C}
   @moduledoc false
 
   describe "acquire/1" do
@@ -72,7 +72,7 @@ defmodule WaferCircuits.I2CTest do
     end
   end
 
-  describe "release/1" do
+  describe "Release.release/1" do
     test "closes the bus connection" do
       conn = conn()
 
@@ -82,7 +82,7 @@ defmodule WaferCircuits.I2CTest do
         :ok
       end)
 
-      assert :ok = Subject.release(conn)
+      assert :ok = Release.release(conn)
     end
   end
 

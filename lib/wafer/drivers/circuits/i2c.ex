@@ -38,9 +38,17 @@ defmodule Wafer.Driver.Circuits.I2C do
         {:error, reason}
     end
   end
+end
 
-  @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref} = _conn), do: Wrapper.close(ref)
+defimpl Wafer.Release, for: Wafer.Driver.Circuits.I2C do
+  alias Wafer.Driver.Circuits.I2C.Wrapper
+  alias Wafer.Driver.Circuits.I2C
+
+  @doc """
+  Release all resources associated with this device.
+  """
+  @spec release(I2C.t()) :: :ok | {:error, reason :: any}
+  def release(%I2C{ref: ref} = _conn), do: Wrapper.close(ref)
 end
 
 defimpl Wafer.Chip, for: Wafer.Driver.Circuits.I2C do

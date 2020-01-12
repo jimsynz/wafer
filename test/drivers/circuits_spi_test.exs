@@ -3,7 +3,7 @@ defmodule WaferCircuits.SPITest do
   use Mimic
   alias Wafer.Driver.Circuits.SPI, as: Subject
   alias Wafer.Driver.Circuits.SPI.Wrapper
-  alias Wafer.SPI
+  alias Wafer.{Release, SPI}
   @moduledoc false
 
   describe "acquire/1" do
@@ -23,7 +23,7 @@ defmodule WaferCircuits.SPITest do
     end
   end
 
-  describe "release/1" do
+  describe "Release.release/1" do
     test "closes the bus connection" do
       conn = conn()
 
@@ -33,7 +33,7 @@ defmodule WaferCircuits.SPITest do
         :ok
       end)
 
-      assert :ok = Subject.release(conn)
+      assert :ok = Release.release(conn)
     end
   end
 

@@ -22,14 +22,15 @@ defmodule Wafer.Driver.Fake do
     {:ok, %__MODULE__{opts: opts}}
   end
 
-  @impl Wafer.Conn
-  def release(%__MODULE__{}), do: :ok
-
   defp emit_warning do
     :wafer
     |> Application.get_env(__MODULE__)
     |> Keyword.get(:warn, false)
   end
+end
+
+defimpl Wafer.Release, for: Wafer.Driver.Fake do
+  def release(%Wafer.Driver.Fake{}), do: :ok
 end
 
 defimpl Wafer.Chip, for: Wafer.Driver.Fake do

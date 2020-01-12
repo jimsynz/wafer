@@ -35,14 +35,19 @@ defmodule Wafer.Driver.ElixirALE.GPIO do
       {:error, reason} -> {:error, reason}
     end
   end
+end
+
+defimpl Wafer.Release, for: Wafer.Driver.ElixirALE.GPIO do
+  alias Wafer.Driver.ElixirALE.GPIO.Wrapper
+  alias Wafer.Driver.ElixirALE.GPIO
 
   @doc """
   Release all resources related to this GPIO pin connection.
 
   Note that other connections may still be using the pin.
   """
-  @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid} = _conn), do: Wrapper.release(pid)
+  @spec release(GPIO.t()) :: :ok | {:error, reason :: any}
+  def release(%GPIO{pid: pid} = _conn), do: Wrapper.release(pid)
 end
 
 defimpl Wafer.GPIO, for: Wafer.Driver.ElixirALE.GPIO do

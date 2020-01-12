@@ -23,11 +23,17 @@ defmodule Wafer.Conn do
       with {:ok, conn} <- Driver.acquire(bus_name: bus, address: address),
           do: {:ok, %HTS221{conn: conn}}
     end
-
-    def release(%HTS221{conn: conn}), do: Driver.release(conn)
   end
   ```
   """
+
+  defmacro __using__(_env) do
+    quote do
+      @behaviour Wafer.Conn
+    end
+
+    Protocol.assert_impl!(Wafer.Release, __MODULE__)
+  end
 
   @type t :: any
   @type options :: [option]
@@ -37,9 +43,4 @@ defmodule Wafer.Conn do
   Acquire a connection to a peripheral using the provided driver.
   """
   @callback acquire(options) :: {:ok, t} | {:error, reason :: any}
-
-  @doc """
-  Release all resources associated with this connection.
-  """
-  @callback release(module) :: :ok | {:error, reason :: any}
 end

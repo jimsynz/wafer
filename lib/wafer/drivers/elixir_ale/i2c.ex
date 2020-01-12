@@ -38,9 +38,17 @@ defmodule Wafer.Driver.ElixirALE.I2C do
         {:error, reason}
     end
   end
+end
 
-  @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: Wrapper.release(pid)
+defimpl Wafer.Release, for: Wafer.Driver.ElixirALE.I2C do
+  alias Wafer.Driver.ElixirALE.I2C.Wrapper
+  alias Wafer.Driver.ElixirALE.I2C
+
+  @doc """
+  Release all resources associated with this I2C device.
+  """
+  @spec release(I2C.t()) :: :ok | {:error, reason :: any}
+  def release(%I2C{pid: pid} = _conn) when is_pid(pid), do: Wrapper.release(pid)
 end
 
 defimpl Wafer.Chip, for: Wafer.Driver.ElixirALE.I2C do

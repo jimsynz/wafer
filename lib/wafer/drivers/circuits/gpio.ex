@@ -36,14 +36,19 @@ defmodule Wafer.Driver.Circuits.GPIO do
       {:error, reason} -> {:error, reason}
     end
   end
+end
+
+defimpl Wafer.Release, for: Wafer.Driver.Circuits.GPIO do
+  alias Wafer.Driver.Circuits.GPIO.Wrapper
+  alias Wafer.Driver.Circuits.GPIO
 
   @doc """
   Release all resources related to this GPIO pin connection.
 
   Note that other connections may still be using the pin.
   """
-  @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Wrapper.close(ref)
+  @spec release(GPIO.t()) :: :ok | {:error, reason :: any}
+  def release(%GPIO{ref: ref} = _conn) when is_reference(ref), do: Wrapper.close(ref)
 end
 
 defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do

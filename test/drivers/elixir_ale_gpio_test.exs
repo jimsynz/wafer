@@ -5,6 +5,7 @@ defmodule WaferDriverElixirALE.GPIOTest do
   alias Wafer.Driver.ElixirALE.GPIO.Dispatcher, as: Dispatcher
   alias Wafer.Driver.ElixirALE.GPIO.Wrapper
   alias Wafer.GPIO, as: GPIO
+  alias Wafer.Release, as: Release
   @moduledoc false
 
   describe "acquire/1" do
@@ -25,7 +26,7 @@ defmodule WaferDriverElixirALE.GPIOTest do
     end
   end
 
-  describe "release/1" do
+  describe "Release.release/1" do
     test "closes the pin" do
       conn = conn()
 
@@ -35,7 +36,7 @@ defmodule WaferDriverElixirALE.GPIOTest do
         :ok
       end)
 
-      assert :ok = Subject.release(conn)
+      assert :ok = Release.release(conn)
     end
   end
 

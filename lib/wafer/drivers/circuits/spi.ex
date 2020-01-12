@@ -34,12 +34,17 @@ defmodule Wafer.Driver.Circuits.SPI do
       {:error, reason} -> {:error, reason}
     end
   end
+end
+
+defimpl Wafer.Release, for: Wafer.Driver.Circuits.SPI do
+  alias Wafer.Driver.Circuits.SPI.Wrapper
+  alias Wafer.Driver.Circuits.SPI
 
   @doc """
   Close the SPI bus connection.
   """
-  @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{ref: ref} = _conn) when is_reference(ref), do: Wrapper.close(ref)
+  @spec release(SPI.t()) :: :ok | {:error, reason :: any}
+  def release(%SPI{ref: ref} = _conn) when is_reference(ref), do: Wrapper.close(ref)
 end
 
 defimpl Wafer.SPI, for: Wafer.Driver.Circuits.SPI do

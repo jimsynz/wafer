@@ -35,12 +35,17 @@ defmodule Wafer.Driver.ElixirALE.SPI do
       {:error, reason} -> {:error, reason}
     end
   end
+end
+
+defimpl Wafer.Release, for: Wafer.Driver.ElixirALE.SPI do
+  alias Wafer.Driver.ElixirALE.SPI.Wrapper
+  alias Wafer.Driver.ElixirALE.SPI
 
   @doc """
   Close the SPI bus connection.
   """
-  @spec release(t) :: :ok | {:error, reason :: any}
-  def release(%__MODULE__{pid: pid} = _conn) when is_pid(pid), do: Wrapper.release(pid)
+  @spec release(SPI.t()) :: :ok | {:error, reason :: any}
+  def release(%SPI{pid: pid} = _conn) when is_pid(pid), do: Wrapper.release(pid)
 end
 
 defimpl Wafer.SPI, for: Wafer.Driver.ElixirALE.SPI do
