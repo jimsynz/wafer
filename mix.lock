@@ -1,8 +1,8 @@
 %{
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], [], "hexpm"},
-  "circuits_gpio": {:hex, :circuits_gpio, "0.4.3", "1a53dff1eaeefb9f67f4ebc2c1852b603683eedaa6053bed51c038dd64b978bb", [:make, :mix], [{:elixir_make, "~> 0.6", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm"},
-  "circuits_i2c": {:hex, :circuits_i2c, "0.3.5", "43e043d7efc3aead364061f8a7ed627f81ff7cef52bfa47cb629d8a68ca56a9f", [:make, :mix], [{:elixir_make, "~> 0.6", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm"},
-  "circuits_spi": {:hex, :circuits_spi, "0.1.4", "b64161e0a25837bdb3301fbc5754d52278a916b7a549065fba4dc107395a930e", [:make, :mix], [{:elixir_make, "~> 0.6", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm"},
+  "circuits_gpio": {:hex, :circuits_gpio, "0.4.4", "09823645b82d84177549c9520e822ffb87d228413527f8a3134f4f436be16efe", [:make, :mix], [{:elixir_make, "~> 0.6", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm"},
+  "circuits_i2c": {:hex, :circuits_i2c, "0.3.6", "348b8de3cf1ade6c4b92ad7c9de7068df1af0d441df341d7d126d53671924f64", [:make, :mix], [{:elixir_make, "~> 0.6", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm"},
+  "circuits_spi": {:hex, :circuits_spi, "0.1.5", "5f1901c77fb982217a956498ba0d9d0d47cc58ec47731020621b5c95eee296c0", [:make, :mix], [{:elixir_make, "~> 0.6", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm"},
   "credo": {:hex, :credo, "1.1.5", "caec7a3cadd2e58609d7ee25b3931b129e739e070539ad1a0cd7efeeb47014f4", [:mix], [{:bunt, "~> 0.2.0", [hex: :bunt, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: false]}], "hexpm"},
   "earmark": {:hex, :earmark, "1.4.3", "364ca2e9710f6bff494117dbbd53880d84bebb692dafc3a78eb50aa3183f2bfd", [:mix], [], "hexpm"},
   "elixir_ale": {:hex, :elixir_ale, "1.2.1", "07ac2f17a0191b8bd3b0df6b526c7f699a3a4d690c9def573fcb5824eef24d98", [:make, :mix], [{:elixir_make, "~> 0.4", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm"},

@@ -7,7 +7,7 @@ defmodule Wafer.Twiddles do
 
   @type bit_number :: 0..7
   @type bit :: 0..1
-  @type single_bit_binary :: <<_::8>>
+  @type single_byte_binary :: <<_::8>>
 
   # Verify that an integer value fits within a 1 byte representation.
   defguard is_byte(byte) when is_integer(byte) and byte >= 0 and byte <= 255
@@ -29,7 +29,7 @@ defmodule Wafer.Twiddles do
       iex> set_bit(<<0>>, 0)
       <<1>>
   """
-  @spec set_bit(byte | single_bit_binary, bit_number) :: byte
+  @spec set_bit(byte | single_byte_binary, bit_number) :: byte
   def set_bit(byte, bit_number) when is_byte(byte) and is_bit_number(bit_number),
     do: byte ||| 1 <<< bit_number
 
@@ -46,7 +46,7 @@ defmodule Wafer.Twiddles do
       iex> clear_bit(<<3>>, 0)
       <<2>>
   """
-  @spec clear_bit(byte | single_bit_binary, bit_number) :: byte
+  @spec clear_bit(byte | single_byte_binary, bit_number) :: byte
   def clear_bit(byte, bit_number) when is_byte(byte) and is_bit_number(bit_number),
     do: byte &&& ~~~(1 <<< bit_number)
 
@@ -64,7 +64,7 @@ defmodule Wafer.Twiddles do
       iex> set_bit(<<0>>, 1, 1)
       <<2>>
   """
-  @spec set_bit(byte | single_bit_binary, bit_number, bit) :: byte
+  @spec set_bit(byte | single_byte_binary, bit_number, bit) :: byte
   def set_bit(byte, bit_number, 1) when is_byte(byte) and is_bit_number(bit_number),
     do: set_bit(byte, bit_number)
 
@@ -91,7 +91,7 @@ defmodule Wafer.Twiddles do
       iex> get_bit(<<0x7F>>, 6)
       1
   """
-  @spec get_bit(byte | single_bit_binary, bit_number) :: bit
+  @spec get_bit(byte | single_byte_binary, bit_number) :: bit
   def get_bit(byte, bit_number) when is_byte(byte) and is_bit_number(bit_number),
     do: byte >>> bit_number &&& 1
 
@@ -104,14 +104,19 @@ defmodule Wafer.Twiddles do
 
       iex> get_bool(0x7f, 6)
       true
+
+      iex> get_bool(<<0x7F>>, 6)
+      true
   """
-  @spec get_bool(byte | single_bit_binary, bit_number) :: boolean
+  @spec get_bool(byte | single_byte_binary, bit_number) :: boolean
   def get_bool(byte, bit_number) when is_byte(byte) and is_bit_number(bit_number) do
     case(get_bit(byte, bit_number)) do
       1 -> true
       0 -> false
     end
   end
+
+  def get_bool(<<byte>>, bit_number), do: get_bool(byte, bit_number)
 
   @doc """
   Returns the number of 1's in `byte`.
@@ -124,7 +129,7 @@ defmodule Wafer.Twiddles do
       iex> count_ones(<<0x7F>>)
       7
   """
-  @spec count_ones(byte | single_bit_binary) :: non_neg_integer
+  @spec count_ones(byte | single_byte_binary) :: non_neg_integer
   def count_ones(byte) when is_byte(byte) do
     0..7
     |> Enum.reduce(0, &(&2 + get_bit(byte, &1)))
@@ -143,7 +148,7 @@ defmodule Wafer.Twiddles do
       iex> count_zeroes(<<0x7F>>)
       1
   """
-  @spec count_zeroes(byte | single_bit_binary) :: non_neg_integer
+  @spec count_zeroes(byte | single_byte_binary) :: non_neg_integer
   def count_zeroes(byte) when is_byte(byte) do
     0..7
     |> Enum.reduce(8, &(&2 - get_bit(byte, &1)))
@@ -162,7 +167,7 @@ defmodule Wafer.Twiddles do
       iex> find_ones(<<0x0A>>)
       [1, 3]
   """
-  @spec find_ones(byte | single_bit_binary) :: non_neg_integer
+  @spec find_ones(byte | single_byte_binary) :: non_neg_integer
   def find_ones(byte) when is_byte(byte) do
     0..7
     |> Enum.filter(&(get_bit(byte, &1) == 1))
@@ -181,7 +186,7 @@ defmodule Wafer.Twiddles do
       iex> find_zeroes(<<0xFA>>)
       [0, 2]
   """
-  @spec find_zeroes(byte | single_bit_binary) :: non_neg_integer
+  @spec find_zeroes(byte | single_byte_binary) :: non_neg_integer
   def find_zeroes(byte) when is_byte(byte) do
     0..7
     |> Enum.filter(&(get_bit(byte, &1) == 0))

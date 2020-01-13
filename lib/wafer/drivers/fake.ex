@@ -24,7 +24,7 @@ defmodule Wafer.Driver.Fake do
 
   defp emit_warning do
     :wafer
-    |> Application.get_env(__MODULE__)
+    |> Application.get_env(__MODULE__, [])
     |> Keyword.get(:warn, false)
   end
 end
