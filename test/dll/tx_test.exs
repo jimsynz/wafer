@@ -27,8 +27,8 @@ defmodule WaferDllTxTest do
 
   defp collect(tx, bytes) do
     case Tx.tx(tx) do
+      {:done, _tx} -> Enum.reverse(bytes)
       {byte, tx} -> collect(tx, [byte | bytes])
-      :done -> Enum.reverse(bytes)
     end
   end
 end

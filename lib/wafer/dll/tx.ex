@@ -28,23 +28,23 @@ defmodule Wafer.DLL.Tx do
   @spec tx(t) :: {byte, t} | :done
   def tx(%Tx{state: :idle} = tx), do: {@byte_start, %{tx | state: :transmitting}}
 
-  def tx(%Tx{state: :transmitting, buffer: <<@byte_start::integer-size(8), _::binary>>} = rx),
-    do: {@byte_esc, %{rx | state: :escaping}}
+  def tx(%Tx{state: :transmitting, buffer: <<@byte_start, _::binary>>} = tx),
+    do: {@byte_esc, %{tx | state: :escaping}}
 
-  def tx(%Tx{state: :transmitting, buffer: <<@byte_end::integer-size(8), _::binary>>} = rx),
-    do: {@byte_esc, %{rx | state: :escaping}}
+  def tx(%Tx{state: :transmitting, buffer: <<@byte_end, _::binary>>} = tx),
+    do: {@byte_esc, %{tx | state: :escaping}}
 
-  def tx(%Tx{state: :transmitting, buffer: <<@byte_esc::integer-size(8), _::binary>>} = rx),
-    do: {@byte_esc, %{rx | state: :escaping}}
+  def tx(%Tx{state: :transmitting, buffer: <<@byte_esc, _::binary>>} = tx),
+    do: {@byte_esc, %{tx | state: :escaping}}
 
-  def tx(%Tx{state: :transmitting, buffer: <<byte::integer-size(8), buffer::binary>>} = rx),
-    do: {byte, %{rx | state: :transmitting, buffer: buffer}}
+  def tx(%Tx{state: :transmitting, buffer: <<byte, buffer::binary>>} = tx),
+    do: {byte, %{tx | state: :transmitting, buffer: buffer}}
 
-  def tx(%Tx{state: :escaping, buffer: <<byte::integer-size(8), buffer::binary>>} = rx),
-    do: {byte, %{rx | state: :escaping, buffer: buffer}}
+  def tx(%Tx{state: :escaping, buffer: <<byte, buffer::binary>>} = tx),
+    do: {byte, %{tx | state: :escaping, buffer: buffer}}
 
-  def tx(%Tx{buffer: <<>>, state: :transmitting} = rx), do: {@byte_end, %{rx | state: :complete}}
-  def tx(%Tx{state: :complete}), do: :done
+  def tx(%Tx{buffer: <<>>, state: :transmitting} = tx), do: {@byte_end, %{tx | state: :complete}}
+  def tx(%Tx{state: :complete} = tx), do: {:done, tx}
 
   def complete?(%Tx{state: :complete}), do: true
   def complete?(%Tx{}), do: false

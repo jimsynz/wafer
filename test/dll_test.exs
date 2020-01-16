@@ -17,12 +17,12 @@ defmodule WaferDLLTest do
 
   def transmit(%Tx{} = tx, %Rx{} = rx) do
     case Tx.tx(tx) do
+      {:done, tx} ->
+        {tx, rx}
+
       {byte, tx} ->
         rx = Rx.rx(rx, byte)
         transmit(tx, rx)
-
-      :done ->
-        {tx, rx}
     end
   end
 end
