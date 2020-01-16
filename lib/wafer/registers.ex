@@ -97,6 +97,7 @@ defmodule Wafer.Registers do
   ```
 
   """
+  @spec defregister(atom, non_neg_integer, :ro | :rw | :wo, non_neg_integer) :: Macro.t()
   defmacro defregister(name, register_address, :ro, bytes)
            when is_atom(name) and is_integer(register_address) and register_address >= 0 and
                   is_integer(bytes) and bytes >= 0 do
@@ -239,6 +240,7 @@ defmodule Wafer.Registers do
       iex> defregister(:config, 0x02, 2)
 
   """
+  @spec defregister(atom, non_neg_integer, :ro | :rw | :wo | non_neg_integer) :: Macro.t()
   defmacro defregister(name, register_address, mode) when mode in ~w[ro rw wo]a do
     quote do
       defregister(unquote(name), unquote(register_address), unquote(mode), 1)
