@@ -13,7 +13,7 @@ defmodule WaferDriverElixirALE.GPIOTest do
       Wrapper
       |> expect(:start_link, 1, fn pin, direction, opts ->
         assert pin == 1
-        assert direction == :out
+        assert direction == :output
         assert opts == []
         {:ok, self()}
       end)

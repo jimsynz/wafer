@@ -28,6 +28,7 @@ defmodule Wafer.Driver.ElixirALE.GPIO do
   def acquire(opts) when is_list(opts) do
     with {:ok, pin} when is_pin_number(pin) <- Keyword.fetch(opts, :pin),
          direction when direction in [:in, :out] <- Keyword.get(opts, :direction, :out),
+         direction <- String.to_atom("#{direction}put"),
          {:ok, pid} <- Wrapper.start_link(pin, direction, Keyword.drop(opts, ~w[pin direction]a)) do
       {:ok, %__MODULE__{pid: pid, pin: pin, direction: direction}}
     else
