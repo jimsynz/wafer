@@ -61,15 +61,15 @@ defmodule Wafer.InterruptRegistry do
   """
   @spec subscribe(key, GPIO.pin_condition(), Conn.t(), any, pid) :: :ok
   def subscribe(key, :rising = _pin_condition, conn, metadata, receiver) when is_pid(receiver) do
-    with :yes <- Registry.register_name({IR, key, {:rising, conn, metadata}}, self()), do: :ok
+    with :yes <- Registry.register_name({IR, key, {:rising, conn, metadata}}, receiver), do: :ok
   end
 
   def subscribe(key, :falling = _pin_condition, conn, metadata, receiver) when is_pid(receiver) do
-    with :yes <- Registry.register_name({IR, key, {:falling, conn, metadata}}, self()), do: :ok
+    with :yes <- Registry.register_name({IR, key, {:falling, conn, metadata}}, receiver), do: :ok
   end
 
   def subscribe(key, :both = _pin_condition, conn, metadata, receiver) when is_pid(receiver) do
-    with :yes <- Registry.register_name({IR, key, {:both, conn, metadata}}, self()), do: :ok
+    with :yes <- Registry.register_name({IR, key, {:both, conn, metadata}}, receiver), do: :ok
   end
 
   @doc """
