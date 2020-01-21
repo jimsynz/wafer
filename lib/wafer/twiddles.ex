@@ -63,6 +63,12 @@ defmodule Wafer.Twiddles do
 
       iex> set_bit(<<0>>, 1, 1)
       <<2>>
+
+      iex> set_bit(0, 1, true)
+      2
+
+      iex> set_bit(<<0>>, 1, true)
+      <<2>>
   """
   @spec set_bit(byte | single_byte_binary, bit_number, bit) :: byte
   def set_bit(byte, bit_number, 1) when is_byte(byte) and is_bit_number(bit_number),
