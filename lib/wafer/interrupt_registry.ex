@@ -18,7 +18,7 @@ defmodule Wafer.InterruptRegistry do
   Subscribe the calling process to interrupts for the specified `pin_condition`
   using the provided `key`.
 
-  See `subscribe/5` for more information.
+  See `subscribe/4` for more information.
 
   ## Example
 
@@ -26,28 +26,12 @@ defmodule Wafer.InterruptRegistry do
       :ok
   """
   @spec subscribe(key, GPIO.pin_condition(), Conn.t()) :: :ok
-  def subscribe(key, pin_condition, conn) when is_pin_condition(pin_condition),
-    do: subscribe(key, pin_condition, conn, nil, self())
+  def subscribe(key, pin_condition, conn)
+      when is_pin_condition(pin_condition),
+      do: subscribe(key, pin_condition, conn, nil)
 
   @doc """
-  Subscribe `receiver` process to interrupts for the specified `pin_condition`
-  using the provided `key`.
-
-  See `subscribe/5` for more information.
-
-  ## Example
-
-      iex> subscribe({MCP230017.Pin, 13}, :rising, conn, self())
-      :ok
-  """
-  @spec subscribe(key, GPIO.pin_condition(), Conn.t(), pid) :: :ok
-  def subscribe(key, pin_condition, conn, receiver)
-      when is_pin_condition(pin_condition)
-      when is_pid(receiver),
-      do: subscribe(key, pin_condition, conn, nil, receiver)
-
-  @doc """
-  Subscribe `receiver` process to interrupts for the specified `pin_condition`
+  Subscribe the calling process to interrupts for the specified `pin_condition`
   using the provided `key`.
 
   ## Arguments
@@ -59,17 +43,17 @@ defmodule Wafer.InterruptRegistry do
     - `metadata` arbitrary data which will be sent to the receiver process in
       the interrupt message. Defaults to `nil`.
   """
-  @spec subscribe(key, GPIO.pin_condition(), Conn.t(), any, pid) :: :ok
-  def subscribe(key, :rising = _pin_condition, conn, metadata, receiver) when is_pid(receiver) do
-    with :yes <- Registry.register_name({IR, key, {:rising, conn, metadata}}, receiver), do: :ok
+  @spec subscribe(key, GPIO.pin_condition(), Conn.t(), any) :: :ok
+  def subscribe(key, :rising = _pin_condition, conn, metadata) do
+    with :yes <- Registry.register_name({IR, key, {:rising, conn, metadata}}, self()), do: :ok
   end
 
-  def subscribe(key, :falling = _pin_condition, conn, metadata, receiver) when is_pid(receiver) do
-    with :yes <- Registry.register_name({IR, key, {:falling, conn, metadata}}, receiver), do: :ok
+  def subscribe(key, :falling = _pin_condition, conn, metadata) do
+    with :yes <- Registry.register_name({IR, key, {:falling, conn, metadata}}, self()), do: :ok
   end
 
-  def subscribe(key, :both = _pin_condition, conn, metadata, receiver) when is_pid(receiver) do
-    with :yes <- Registry.register_name({IR, key, {:both, conn, metadata}}, receiver), do: :ok
+  def subscribe(key, :both = _pin_condition, conn, metadata) do
+    with :yes <- Registry.register_name({IR, key, {:both, conn, metadata}}, self()), do: :ok
   end
 
   @doc """

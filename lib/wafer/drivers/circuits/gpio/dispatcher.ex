@@ -22,8 +22,13 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
   Enable interrupts for this connection using the specified pin_condition.
   """
   @spec enable(Conn.t(), GPIO.pin_condition(), any) :: {:ok, Conn.t()} | {:error, reason :: any}
-  def enable(conn, pin_condition, metadata \\ nil) when is_pin_condition(pin_condition),
-    do: GenServer.call(Dispatcher, {:enable, conn, pin_condition, metadata, self()})
+  def enable(%{pin: pin} = conn, pin_condition, metadata \\ nil)
+      when is_pin_condition(pin_condition) do
+    with {:ok, conn} <- GenServer.call(Dispatcher, {:enable, conn, pin_condition}),
+         :ok <- InterruptRegistry.subscribe(key(pin), pin_condition, conn, metadata) do
+      {:ok, conn}
+    end
+  end
 
   @doc """
   Disable interrupts for this connection using the specified pin_condition.
@@ -39,18 +44,14 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
 
   @impl true
   def handle_call(
-        {:enable, %{pin: pin, ref: ref} = conn, pin_condition, metadata, receiver},
+        {:enable, %{pin: pin, ref: ref} = conn, pin_condition},
         _from,
         state
       )
-      when is_pin_condition(pin_condition) and is_pid(receiver) and is_reference(ref) and
-             is_pin_number(pin) do
-    with :ok <- Wrapper.set_interrupts(ref, pin_condition),
-         :ok <- InterruptRegistry.subscribe(key(pin), pin_condition, conn, metadata, receiver) do
-      {:reply, {:ok, conn}, state}
-    else
-      {:error, reason} ->
-        {:reply, {:error, reason}, state}
+      when is_pin_condition(pin_condition) and is_reference(ref) and is_pin_number(pin) do
+    case Wrapper.set_interrupts(ref, pin_condition) do
+      :ok -> {:reply, {:ok, conn}, state}
+      {:error, reason} -> {:reply, {:error, reason}, state}
     end
   end
 

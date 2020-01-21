@@ -7,5 +7,6 @@ Mimic.copy(Wafer.Driver.ElixirALE.GPIO.Wrapper)
 Mimic.copy(Wafer.Driver.ElixirALE.GPIO.Dispatcher)
 Mimic.copy(Wafer.Driver.ElixirALE.I2C.Wrapper)
 Mimic.copy(Wafer.Driver.ElixirALE.SPI.Wrapper)
+Mimic.copy(Wafer.InterruptRegistry)
 
 ExUnit.start()

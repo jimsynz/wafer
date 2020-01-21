@@ -42,14 +42,14 @@ defmodule Wafer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
-      {:earmark, ">= 0.0.0", only: [:dev, :test]},
-      {:mimic, "~> 1.1", only: :test},
-      {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:elixir_ale, "~> 1.2", optional: true},
-      {:circuits_i2c, "~> 0.3", optional: true},
       {:circuits_gpio, "~> 0.4", optional: true},
-      {:circuits_spi, "~> 0.1", optional: true}
+      {:circuits_i2c, "~> 0.3", optional: true},
+      {:circuits_spi, "~> 0.1", optional: true},
+      {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
+      {:earmark, ">= 0.0.0", only: [:dev, :test]},
+      {:elixir_ale, "~> 1.2", optional: true},
+      {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
+      {:mimic, "~> 1.1", only: :test}
     ]
   end
 end
