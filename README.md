@@ -8,6 +8,10 @@ Wafer implements the [GPIO](https://hexdocs.pm/wafer/Wafer.GPIOProto.html) and [
 
 Documentation for the master branch can always be found [here](https://jimsy.gitlab.io/wafer/).
 
+Some examples of how to use this project:
+ - [Augie](https://gitlab.com/jimsy/augie), a hexapod robot.
+ - [PCA9641](https://gitlab.com/jimsy/pca9641), an example of how easy it is to write a driver with Wafer.
+
 ## Working with registers
 
 Wafer provides the very helpful [Registers](https://hexdocs.pm/wafer/Wafer.Registers.html) macros which allow you to quickly and easily define your registers for your device:
