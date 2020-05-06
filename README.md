@@ -49,6 +49,62 @@ defmodule HTS221 do
 end
 ```
 
+## Working with GPIO
+
+Wafer provides a simple way to drive specific GPIO functionality per device.
+
+Here's a super simple "blinky" example:
+
+```elixir
+defmodule WaferBlinky do
+  @derive [Wafer.GPIO]
+  defstruct ~w[conn]a
+  @behaviour Wafer.Conn
+  alias Wafer.Conn
+  alias Wafer.GPIO
+
+  @type t :: %WaferBlinky{conn: Conn.t()}
+  @type acquire_options :: [acquire_option]
+  @type acquire_option :: {:conn, Conn.t()}
+
+  @impl Wafer.Conn
+  def acquire(options) do
+    with {:ok, conn} <- Keyword.fetch(options, :conn) do
+      {:ok, %WaferBlinky{conn: conn}}
+    else
+      :error -> {:error, "`WaferBlinky.acquire/1` requires the `conn` option."}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def turn_on(conn), do: GPIO.write(conn, 1)
+  def turn_off(conn), do: GPIO.write(conn, 0)
+end
+```
+
+And a simple mix task to drive it:
+
+```elixir
+defmodule Mix.Tasks.Blink do
+  use Mix.Task
+  @shortdoc "GPIO LED Blink Example"
+
+  alias Wafer.Driver.Circuits.GPIO
+
+  def run(_args) do
+    {:ok, led_pin_21} = GPIO.acquire(pin: 21, direction: :out)
+    {:ok, conn} = WaferBlinky.acquire(conn: led_pin_21)
+
+    Enum.each(1..10, fn _ ->
+      WaferBlinky.turn_on(conn)
+      :timer.sleep(500)
+      WaferBlinky.turn_off(conn)
+      :timer.sleep(500)
+    end)
+  end
+end
+```
+
 ## Running the tests
 
 I've included stub implementations of the parts of `ElixirALE` and `Circuits`
