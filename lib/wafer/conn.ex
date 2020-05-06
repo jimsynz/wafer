@@ -12,7 +12,7 @@ defmodule Wafer.Conn do
   ```elixir
   defmodule HTS221 do
     defstruct ~w[conn]a
-    alias Wafer.Drivers.Circuits.I2C, as: Driver
+    alias Wafer.Driver.Circuits.I2C, as: Driver
     @behaviour Wafer.Conn
     @default_bus "i2c-1"
     @default_address 0x5F
