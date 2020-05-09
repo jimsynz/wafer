@@ -30,6 +30,12 @@ defprotocol Wafer.Chip do
   end
   ```
 
+  ## A note on SPI devices
+
+  You will have to manually implement this protocol for SPI devices as there is
+  no conventional way to read and write registers over SPI and every device has
+  their own way of implementing an SPI instruction set.
+
   """
 
   @type register_address :: non_neg_integer
