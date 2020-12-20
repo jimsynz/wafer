@@ -1,5 +1,10 @@
 image: elixir:latest
 
+stages:
+  - test
+  - version
+  - release
+
 cache:
   key: "$CI_JOB_NAME"
   paths:
@@ -9,6 +14,7 @@ cache:
 
 variables:
   MIX_ENV: "test"
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/"
 
 before_script:
   - mix local.hex --force
@@ -43,7 +49,7 @@ format:
     - mix format --check-formatted
 
 pages:
-  stage: deploy
+  stage: release
   script:
     - mix docs -o public
   artifacts:
@@ -52,12 +58,44 @@ pages:
   only:
     - master
 
-package:
-  stage: deploy
+git_ops:
+  stage: version
   only:
-    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+    - gitops-experiment
   script:
-    - mix hex.build
+    - |
+      mix deps.compile
+      mkdir -p artifacts
+      git config --global user.name "Gitlab Runner for ${GITLAB_USER_NAME}"
+      git config --global user.email "${GITLAB_USER_EMAIL}"
+      mix git_ops.release --yes --force-patch
+      mix git_ops.project_info -f shell > artifacts/env
+      source artifacts/env
+      mix hex.build -o "artifacts/${APP_NAME}-${APP_VERSION}.tar"
+      gzip "artifacts/${APP_NAME}-${APP_VERSION}.tar"
+      mix docs && tar zcvf "artifacts/${APP_NAME}-${APP_VERSION}-docs.tar.gz" doc/
+      curl --header "JOB_TOKEN: ${CI_JOB_TOKEN}" --upload-file "artifacts/${APP_NAME}-${APP_VERSION}.tar.gz" "${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}.tar.gz"
+      curl --header "JOB_TOKEN: ${CI_JOB_TOKEN}" --upload-file "artifacts/${APP_NAME}-${APP_VERSION}-docs.tar.gz" "${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}-docs.tar.gz"
+      export GIT_SSH_COMMAND="ssh -i ${DEPLOY_KEY}"
+      git push "https://${GITLAB_USER_LOGIN}:${CI_JOB_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git" "HEAD:${CI_COMMIT_REF_NAME}" "refs/tags/v${APP_VERSION}"
   artifacts:
     paths:
-      - "wafer-*.tar"
+      - artifacts/*
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  only:
+    - gitops-experiment
+  needs:
+    - job: git_ops
+      artifacts: true
+  script:
+    - |
+      source artifacts/env
+      release-cli create \
+        --name "Release ${APP_NAME} ${APP_VERSION}" \
+        --description "./CHANGELOG.md" \
+        --tag-name "v${APP_NAME}" \
+        --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}.tar.gz\"}" \
+        --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}-docs.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}-docs.tar.gz\"}"
