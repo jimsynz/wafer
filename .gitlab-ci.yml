@@ -26,12 +26,12 @@ test:
   script:
     - mix test
 
-integrate:
-  stage: test
-  tags:
-    - sense-hat
-  script:
-    - SENSE_HAT_PRESENT=true mix test
+# integrate:
+#   stage: test
+#   tags:
+#     - sense-hat
+#   script:
+#     - SENSE_HAT_PRESENT=true mix test
 
 credo:
   stage: test
@@ -81,7 +81,7 @@ git_ops:
     paths:
       - artifacts/*
 
-release:
+release-gitlab:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   only:
@@ -98,3 +98,12 @@ release:
         --tag-name "v${APP_NAME}" \
         --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}.tar.gz\"}" \
         --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}-docs.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}-docs.tar.gz\"}"
+
+release-hex:
+  stage: release
+  only:
+    - gitops-experiment
+  needs:
+    - job: git_ops
+  script:
+    - mix hex.publish --yes
