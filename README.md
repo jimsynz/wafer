@@ -122,7 +122,7 @@ by adding `wafer` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:wafer, "~> 0.1.5"}
+    {:wafer, "~> 0.1.6"}
   ]
 end
 ```
