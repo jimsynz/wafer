@@ -7,7 +7,7 @@ defmodule Wafer.MixProject do
   peripherals and interacting with GPIO pins easier.
   """
 
-  @version "0.1.1"
+  @version "0.1.2"
 
   def project do
     [
