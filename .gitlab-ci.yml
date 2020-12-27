@@ -50,7 +50,7 @@ integrate:
   tags:
     - sense-hat
   script:
-    - mix clean
+    - rm -rf _build
     - SENSE_HAT_PRESENT=true mix test
 
 credo:
@@ -118,6 +118,9 @@ git_ops:
   artifacts:
     paths:
       - artifacts/*
+      - mix.exs
+      - README.md
+      - CHANGELOG.md
 
 release-gitlab:
   stage: release
