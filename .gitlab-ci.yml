@@ -36,18 +36,16 @@ build:
 
 test:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
+  dependencies:
+    - build
   stage: test
   script:
     - mix test
 
 integrate:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
+  dependencies:
+    - build
   stage: test
   tags:
     - sense-hat
@@ -57,36 +55,32 @@ integrate:
 
 credo:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
+  dependencies:
+    - build
   stage: test
   script:
     - mix credo
 
 audit:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
+  dependencies:
+    - build
   stage: test
   script:
     - mix hex.audit
 
 format:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
+  dependencies:
+    - build
   stage: test
   script:
     - mix format --check-formatted
 
 pages:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
+  dependencies:
+    - build
   stage: release
   script:
     - mix docs -o public
@@ -98,13 +92,8 @@ pages:
 
 git_ops:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
-    - job: audit
-    - job: credo
-    - job: format
-    - job: test
+  dependencies:
+    - build
   stage: version
   only:
     refs:
@@ -135,9 +124,8 @@ release-gitlab:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   only:
     - master
-  needs:
-    - job: git_ops
-      artifacts: true
+  dependencies:
+    - git_ops
   script:
     - |
       source artifacts/env
@@ -150,10 +138,9 @@ release-gitlab:
 
 release-hex:
   image: elixir:latest
-  needs:
-    - job: build
-      artifacts: true
-    - job: git_ops
+  dependencies:
+    - build
+    - git_ops
   stage: release
   only:
     - master
