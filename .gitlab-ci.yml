@@ -47,13 +47,6 @@ test:
 integrate:
   image: elixir:latest
   stage: test
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - deps
-      - _build
-      - .hex
-      - .mix
   tags:
     - sense-hat
   script:
