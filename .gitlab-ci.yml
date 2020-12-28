@@ -52,6 +52,7 @@ integrate:
   script:
     - mix local.hex --force
     - mix local.rebar --force
+    - rm -rf deps _build
     - mix deps.get
     - mix deps.compile
     - SENSE_HAT_PRESENT=true mix test
