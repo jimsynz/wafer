@@ -128,11 +128,12 @@ git_ops:
 
 release-gitlab:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
+  dependencies:
+    - build
+  stage: release
   only:
     - tags
     - /^v\d+\.\d+\.\d+(-\w+)?$/
-  dependencies:
-    - build
   script:
     - release-cli create \
       --name "Release ${APP_NAME} ${APP_VERSION}" \
