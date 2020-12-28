@@ -113,7 +113,7 @@ git_ops:
       mix git_ops.release --yes || true
       mix git_ops.project_info -f shell > artifacts/env
       source artifacts/env
-      if [ "v${OLD_APP_VERSION}" != "v${NEW_APP_VERSION}" ]; then
+      if [ "v${OLD_APP_VERSION}" != "v${APP_VERSION}" ]; then
         mix hex.build -o "artifacts/${APP_NAME}-${APP_VERSION}.tar"
         gzip "artifacts/${APP_NAME}-${APP_VERSION}.tar"
         mix docs && tar zcvf "artifacts/${APP_NAME}-${APP_VERSION}-docs.tar.gz" doc/
