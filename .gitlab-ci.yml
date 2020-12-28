@@ -3,7 +3,6 @@ image: elixir:latest
 stages:
   - build
   - test
-  - version
   - release
 
 variables:
@@ -27,12 +26,15 @@ build:
     - mix local.rebar --force
     - mix deps.get
     - mix deps.compile
+    - mix git_ops.project_info -f dotenv > project_info.env
   artifacts:
     paths:
       - _build/
       - deps/
       - .hex
       - .mix
+    reports:
+      dotenv: project_info.env
 
 test:
   image: elixir:latest
@@ -94,7 +96,7 @@ git_ops:
   image: elixir:latest
   dependencies:
     - build
-  stage: version
+  stage: release
   only:
     refs:
       - master
@@ -118,34 +120,29 @@ git_ops:
   artifacts:
     paths:
       - artifacts/*
-      - mix.exs
-      - README.md
-      - CHANGELOG.md
 
 release-gitlab:
-  stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   only:
-    - master
+    - tags
+    - /^v\d+\.\d+\.\d+(-\w+)?$/
   dependencies:
-    - git_ops
+    - build
   script:
-    - |
-      source artifacts/env
-      release-cli create \
-        --name "Release ${APP_NAME} ${APP_VERSION}" \
-        --description "./CHANGELOG.md" \
-        --tag-name "v${APP_VERSION}" \
-        --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}.tar.gz\"}" \
-        --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}-docs.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}-docs.tar.gz\"}"
+    - release-cli create \
+      --name "Release ${APP_NAME} ${APP_VERSION}" \
+      --description "./CHANGELOG.md" \
+      --tag-name "v${APP_VERSION}" \
+      --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}.tar.gz\"}" \
+      --assets-link "{\"name\":\"${APP_NAME}-${APP_VERSION}-docs.tar.gz\",\"url\":\"${PACKAGE_REGISTRY_URL}/${APP_NAME}/${APP_VERSION}/${APP_NAME}-${APP_VERSION}-docs.tar.gz\"}"
 
 release-hex:
   image: elixir:latest
   dependencies:
     - build
-    - git_ops
   stage: release
   only:
-    - master
+    - tags
+    - /^v\d+\.\d+\.\d+(-\w+)?$/
   script:
     - mix hex.publish --yes
