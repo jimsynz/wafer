@@ -45,7 +45,7 @@ defmodule Wafer.MixProject do
     [
       {:circuits_gpio, "~> 1.0", optional: true},
       {:circuits_i2c, "~> 1.0", optional: true},
-      {:circuits_spi, "~> 0.1", optional: true},
+      {:circuits_spi, "~> 1.0", optional: true},
       {:credo, "~> 1.1", only: ~w[dev test]a, runtime: false},
       {:earmark, ">= 0.0.0", only: ~w[dev test]a},
       {:elixir_ale, "~> 1.2", optional: true},
