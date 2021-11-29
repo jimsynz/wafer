@@ -202,9 +202,7 @@ defmodule Wafer.Registers do
 
       ## Example
 
-          iex> transform = fn <<data::size(#{unquote(bits)})>> -> <<(data * 2)::size(#{
-        unquote(bits)
-      })>> end
+          iex> transform = fn <<data::size(#{unquote(bits)})>> -> <<(data * 2)::size(#{unquote(bits)})>> end
           ...> update_#{unquote(name)}(conn, transform)
           {:ok, _conn}
       """
