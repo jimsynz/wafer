@@ -5,6 +5,11 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.3.1](https://gitlab.com/jimsy/wafer/compare/v0.3.0...v0.3.1) (2021-11-29)
+
+
+
+
 ## [v0.3.0](https://gitlab.com/jimsy/wafer/compare/v0.2.0...v0.3.0) (2020-12-28)
 
 
