@@ -43,7 +43,7 @@ defmodule Wafer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:circuits_gpio, "~> 0.4", optional: true},
+      {:circuits_gpio, "~> 1.0", optional: true},
       {:circuits_i2c, "~> 0.3", optional: true},
       {:circuits_spi, "~> 0.1", optional: true},
       {:credo, "~> 1.1", only: ~w[dev test]a, runtime: false},
