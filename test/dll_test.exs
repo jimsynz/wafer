@@ -12,7 +12,7 @@ defmodule WaferDLLTest do
 
     assert Tx.complete?(tx)
     assert Rx.complete?(rx)
-    assert {:ok, value} = Rx.value(rx)
+    assert {:ok, ^value} = Rx.value(rx)
   end
 
   def transmit(%Tx{} = tx, %Rx{} = rx) do

@@ -23,7 +23,7 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
         :ok
       end)
 
-      assert {:reply, {:ok, conn}, _state} =
+      assert {:reply, {:ok, _conn}, _state} =
                Dispatcher.handle_call({:enable, conn, :rising}, nil, state())
     end
 
@@ -37,7 +37,7 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
         :ok
       end)
 
-      assert {:reply, {:ok, conn}, _state} =
+      assert {:reply, {:ok, _conn}, _state} =
                Dispatcher.handle_call({:enable, conn, :falling}, nil, state())
     end
 
@@ -51,7 +51,7 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
         :ok
       end)
 
-      assert {:reply, {:ok, conn}, _state} =
+      assert {:reply, {:ok, _conn}, _state} =
                Dispatcher.handle_call({:enable, conn, :both}, nil, state())
     end
 
@@ -63,7 +63,7 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
 
       Dispatcher.handle_call({:enable, conn, :rising}, nil, state())
 
-      assert {:reply, {:ok, conn}, _state} =
+      assert {:reply, {:ok, _conn}, _state} =
                Dispatcher.handle_call({:disable, conn, :rising}, nil, state())
     end
 
@@ -75,7 +75,7 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
 
       Dispatcher.handle_call({:enable, conn, :falling}, nil, state())
 
-      assert {:reply, {:ok, conn}, _state} =
+      assert {:reply, {:ok, _conn}, _state} =
                Dispatcher.handle_call({:disable, conn, :falling}, nil, state())
     end
 
@@ -87,7 +87,7 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
 
       Dispatcher.handle_call({:enable, conn, :both}, nil, state())
 
-      assert {:reply, {:ok, conn}, _state} =
+      assert {:reply, {:ok, _conn}, _state} =
                Dispatcher.handle_call({:disable, conn, :both}, nil, state())
 
       refute IR.subscribers?({Dispatcher, 1}, :both)

@@ -100,7 +100,6 @@ defmodule WaferInterruptRegistryTest do
     end
 
     test "returns false if there are no subscribers for `key` and `pin_condition`" do
-      receiver = self()
       :ok = IR.subscribe(:key, :rising, :conn, :metadata)
 
       refute IR.subscribers?(:key, :falling)

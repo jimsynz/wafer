@@ -24,7 +24,7 @@ defmodule WaferElixirALE.I2CTest do
         [address]
       end)
 
-      assert {:ok, %Subject{} = conn} = Subject.acquire(bus_name: busname, address: address)
+      assert {:ok, %Subject{}} = Subject.acquire(bus_name: busname, address: address)
     end
 
     test "when the device is not present on the bus" do
@@ -62,8 +62,7 @@ defmodule WaferElixirALE.I2CTest do
         []
       end)
 
-      assert {:ok, %Subject{} = conn} =
-               Subject.acquire(bus_name: busname, address: address, force: true)
+      assert {:ok, %Subject{}} = Subject.acquire(bus_name: busname, address: address, force: true)
     end
 
     test "when the bus name is not specified it returns an error" do
