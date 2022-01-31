@@ -47,9 +47,9 @@ defmodule Wafer.MixProject do
       {:circuits_i2c, "~> 1.0", optional: true},
       {:circuits_spi, "~> 1.2", optional: true},
       {:credo, "~> 1.6", only: ~w[dev test]a, runtime: false},
-      {:earmark, ">= 1.4.20", only: ~w[dev test]a},
+      {:earmark, "~> 1.4", only: ~w[dev test]a},
       {:elixir_ale, "~> 1.2", optional: true},
-      {:ex_doc, ">= 0.26.0", only: ~w[dev test]a},
+      {:ex_doc, ">= 0.28.0", only: ~w[dev test]a},
       {:git_ops, "~> 2.4", only: ~w[dev test]a, runtime: false},
       {:mimic, "~> 1.5", only: :test}
     ]
