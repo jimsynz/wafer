@@ -32,8 +32,8 @@ defmodule Wafer.MixProject do
 
   def package do
     [
-      maintainers: ["James Harton <james@automat.nz>"],
-      licenses: ["Hippocratic"],
+      maintainers: ["James Harton <james@harton.nz>"],
+      licenses: ["HL3-FULL"],
       links: %{
         "Source" => "https://gitlab.com/jimsy/wafer"
       }

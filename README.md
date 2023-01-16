@@ -1,5 +1,9 @@
 # Wafer
 
+[![pipeline status](https://gitlab.com/jimsy/wafer/badges/main/pipeline.svg)](https://gitlab.com/jimsy/wafer/commits/main)
+[![Hex.pm](https://img.shields.io/hexpm/v/wafer.svg)](https://hex.pm/packages/wafer)
+[![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
+
 Wafer is an OTP application that assists with writing drivers for peripherals using I2C, SPI and GPIO pins.
 
 Wafer provides Elixir protocols for interacting with device registers and dealing with GPIO, so that you can use directly connected hardware GPIO pins or GPIO expanders such as the [MCP23008](https://www.microchip.com/wwwproducts/en/MCP23008) or the [CD74HC595](http://www.ti.com/product/CD74HC595) SPI shift register.
@@ -131,3 +135,14 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/wafer](https://hexdocs.pm/wafer).
 
+## License
+
+This software is licensed under the terms of the
+[HL3-FULL](https://firstdonoharm.dev), see the `LICENSE.md` file included with
+this package for the terms.
+
+This license actively proscribes this software being used by and for some
+industries, countries and activities.  If your usage of this software doesn't
+comply with the terms of this license, then [contact me](mailto:james@harton.nz)
+with the details of your use-case to organise the purchase of a license - the
+cost of which may include a donation to a suitable charity or NGO.
