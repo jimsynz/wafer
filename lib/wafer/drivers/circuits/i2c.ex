@@ -1,6 +1,7 @@
 defmodule Wafer.Driver.Circuits.I2C do
   defstruct ~w[address bus ref]a
   @behaviour Wafer.Conn
+  alias Circuits.I2C.I2CDev
   alias Wafer.Driver.Circuits.I2C.Wrapper
   alias Wafer.I2C
   import Wafer.Guards
@@ -23,7 +24,7 @@ defmodule Wafer.Driver.Circuits.I2C do
   def acquire(opts) when is_list(opts) do
     with {:ok, bus} when is_binary(bus) <- Keyword.fetch(opts, :bus_name),
          {:ok, address} when is_i2c_address(address) <- Keyword.fetch(opts, :address),
-         {:ok, ref} when is_reference(ref) <- Wrapper.open(bus),
+         {:ok, ref} when is_reference(ref) or is_struct(ref, I2CDev) <- Wrapper.open(bus),
          devices when is_list(devices) <- Wrapper.detect_devices(ref),
          true <- Keyword.get(opts, :force, false) || Enum.member?(devices, address) do
       {:ok, %__MODULE__{bus: bus, address: address, ref: ref}}
@@ -56,14 +57,14 @@ defimpl Wafer.Chip, for: Wafer.Driver.Circuits.I2C do
   import Wafer.Guards
 
   def read_register(%{ref: ref, address: address}, register_address, bytes)
-      when is_reference(ref) and is_i2c_address(address) and is_register_address(register_address) and
+      when is_i2c_address(address) and is_register_address(register_address) and
              is_byte_size(bytes),
       do: Wrapper.write_read(ref, address, <<register_address>>, bytes)
 
   def read_register(_conn, _register_address, _bytes), do: {:error, "Invalid argument"}
 
   def write_register(%{ref: ref, address: address} = conn, register_address, data)
-      when is_reference(ref) and is_i2c_address(address) and is_register_address(register_address) and
+      when is_i2c_address(address) and is_register_address(register_address) and
              is_binary(data) do
     with :ok <- Wrapper.write(ref, address, <<register_address, data::binary>>), do: {:ok, conn}
   end
@@ -86,7 +87,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.Circuits.I2C do
   alias Wafer.Driver.Circuits.I2C.Wrapper
 
   def read(%{ref: ref, address: address}, bytes, options \\ [])
-      when is_reference(ref) and is_i2c_address(address) and is_byte_size(bytes) and
+      when is_i2c_address(address) and is_byte_size(bytes) and
              is_list(options) do
     case Wrapper.read(ref, address, bytes, options) do
       {:ok, data} when is_binary(data) and byte_size(data) == bytes -> {:ok, data}
@@ -96,12 +97,12 @@ defimpl Wafer.I2C, for: Wafer.Driver.Circuits.I2C do
   end
 
   def write(%{ref: ref, address: address} = conn, data, options \\ [])
-      when is_reference(ref) and is_i2c_address(address) and is_binary(data) and is_list(options) do
+      when is_i2c_address(address) and is_binary(data) and is_list(options) do
     with :ok <- Wrapper.write(ref, address, data, options), do: {:ok, conn}
   end
 
   def write_read(%{ref: ref, address: address} = conn, data, bytes, options \\ [])
-      when is_reference(ref) and is_i2c_address(address) and is_binary(data) and
+      when is_i2c_address(address) and is_binary(data) and
              is_byte_size(bytes) and is_list(options) do
     case Wrapper.write_read(ref, address, data, bytes, options) do
       {:ok, data} when is_binary(data) and byte_size(data) == bytes -> {:ok, data, conn}
