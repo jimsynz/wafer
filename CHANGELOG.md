@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.1](https://gitlab.com/jimsy/wafer/compare/v1.0.0...v1.0.1) (2023-08-15)
+
+
+
+
+### Improvements:
+
+* handle new `Circuits.I2C.open/1` result.
+
 ## [v1.0.0](https://gitlab.com/jimsy/wafer/compare/v0.3.1...v1.0.0) (2023-01-16)
 ### Breaking Changes:
 

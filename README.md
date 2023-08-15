@@ -126,7 +126,7 @@ by adding `wafer` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:wafer, "~> 1.0.0"}
+    {:wafer, "~> 1.0.1"}
   ]
 end
 ```
