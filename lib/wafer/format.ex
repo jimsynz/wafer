@@ -1,6 +1,4 @@
 defmodule Wafer.Format do
-  use Bitwise
-
   @moduledoc """
   Handy functions for formatting bytes, especially for debugging.
   """

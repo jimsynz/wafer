@@ -1,5 +1,5 @@
 defmodule Wafer.Twiddles do
-  use Bitwise
+  import Bitwise
 
   @moduledoc """
   Handy functions for dealing with bits and bytes in the wild.

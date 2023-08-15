@@ -17,7 +17,7 @@ defmodule Wafer.Driver.Fake do
   @impl Wafer.Conn
   def acquire(opts) do
     if emit_warning(),
-      do: Logger.warn("Creating an instance of `Wafer.Driver.Fake` in a non-test environment.")
+      do: Logger.warning("Creating an instance of `Wafer.Driver.Fake` in a non-test environment.")
 
     {:ok, %__MODULE__{opts: opts}}
   end
