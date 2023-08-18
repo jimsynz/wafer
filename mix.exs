@@ -44,7 +44,11 @@ defmodule Wafer.MixProject do
   defp deps do
     [
       {:circuits_gpio, "~> 1.0", optional: true},
-      {:circuits_i2c, "~> 2.0", optional: true},
+      if System.get_env("CI_I2C_1_X") == "true" do
+        {:circuits_i2c, "~> 1.0", optional: true}
+      else
+        {:circuits_i2c, "~> 2.0 or ~> 1.0", optional: true}
+      end,
       {:circuits_spi, "~> 1.3", optional: true},
       {:credo, "~> 1.6", only: ~w[dev test]a, runtime: false},
       {:earmark, "~> 1.4", only: ~w[dev test]a},
