@@ -69,6 +69,14 @@ test:
   script:
     - mix test
 
+test_i2c_1_x:
+  image: elixir:latest
+  dependencies:
+    - build_i2c_1_x
+  stage: test
+  script:
+    - mix test
+
 integrate:
   image: elixir:latest
   stage: test
