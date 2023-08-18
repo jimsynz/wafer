@@ -38,7 +38,7 @@ build:
 
 build_i2c_1_x:
   image: elixir:latest
-  stage: build_i2c_1_x
+  stage: build
   cache:
     key: "$CI_JOB_NAME"
     paths:
@@ -49,7 +49,7 @@ build_i2c_1_x:
   script:
     - mix local.hex --force
     - mix local.rebar --force
-    - mix deps.get
+    - CI_I2C_1_X=true mix deps.get
     - mix deps.compile
     - mix git_ops.project_info -f dotenv > project_info.env
   artifacts:
