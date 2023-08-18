@@ -75,7 +75,7 @@ test_i2c_1_x:
     - build_i2c_1_x
   stage: test
   script:
-    - mix test
+    - CI_I2C_1_X=true mix test
 
 integrate:
   image: elixir:latest
