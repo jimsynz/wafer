@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.2](https://gitlab.com/jimsy/wafer/compare/v1.0.1...v1.0.2) (2023-08-21)
+
+
+
+
+### Improvements:
+
+* relax `circuits_i2c` version
+
 ## [v1.0.1](https://gitlab.com/jimsy/wafer/compare/v1.0.0...v1.0.1) (2023-08-15)
 
 
