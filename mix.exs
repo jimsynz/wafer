@@ -49,7 +49,7 @@ defmodule Wafer.MixProject do
       else
         {:circuits_i2c, "~> 2.0 or ~> 1.0", optional: true}
       end,
-      {:circuits_spi, "~> 1.3", optional: true},
+      {:circuits_spi, "~> 2.0", optional: true},
       {:credo, "~> 1.6", only: ~w[dev test]a, runtime: false},
       {:earmark, "~> 1.4", only: ~w[dev test]a},
       {:elixir_ale, "~> 1.2", optional: true},
