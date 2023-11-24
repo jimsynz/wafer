@@ -5,6 +5,7 @@ defmodule Wafer.Application do
 
   use Application
 
+  @doc false
   def start(_type, _args) do
     children = [
       {Registry, [keys: :duplicate, name: Wafer.InterruptRegistry]},

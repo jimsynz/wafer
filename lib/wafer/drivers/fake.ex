@@ -14,6 +14,9 @@ defmodule Wafer.Driver.Fake do
   protocols.
   """
 
+  @type t :: %__MODULE__{opts: any}
+
+  @doc false
   @impl Wafer.Conn
   def acquire(opts) do
     if emit_warning(),

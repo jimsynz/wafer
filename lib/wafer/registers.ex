@@ -15,6 +15,7 @@ defmodule Wafer.Registers do
   @type access_mode :: :ro | :rw | :wo
   @type bytes :: non_neg_integer
 
+  @doc false
   defmacro __using__(_opts) do
     quote do
       import Wafer.Registers
