@@ -8,13 +8,14 @@ Wafer is an OTP application that assists with writing drivers for peripherals us
 
 Wafer provides Elixir protocols for interacting with device registers and dealing with GPIO, so that you can use directly connected hardware GPIO pins or GPIO expanders such as the [MCP23008](https://www.microchip.com/wwwproducts/en/MCP23008) or the [CD74HC595](http://www.ti.com/product/CD74HC595) SPI shift register.
 
-Wafer implements the [GPIO](https://hexdocs.pm/wafer/Wafer.GPIOProto.html) and [Chip](https://hexdocs.pm/wafer/Wafer.Chip.html) protocols for [ElixirALE](https://hex.pm/packages/elixir_ale)'s GPIO and I2C drivers, [Circuits.GPIO](https://hex.pm/packages/circuits_gpio) and [Circuits.I2C](https://hex.pm/packages/circuits_i2c).  Implementing it for SPI should also be trivial, I just don't have any SPI devices to test with at the moment.
+Wafer implements the [GPIO](https://hexdocs.pm/wafer/Wafer.GPIOProto.html) and [Chip](https://hexdocs.pm/wafer/Wafer.Chip.html) protocols for [ElixirALE](https://hex.pm/packages/elixir_ale)'s GPIO and I2C drivers, [Circuits.GPIO](https://hex.pm/packages/circuits_gpio) and [Circuits.I2C](https://hex.pm/packages/circuits_i2c). Implementing it for SPI should also be trivial, I just don't have any SPI devices to test with at the moment.
 
-Documentation for the main branch can always be found [here](https://jimsy.gitlab.io/wafer/).
+Documentation for the main branch can always be found [here](https://docs.harton.nz/james/wafer/).
 
 Some examples of how to use this project:
- - [Augie](https://gitlab.com/jimsy/augie), a hexapod robot.
- - [PCA9641](https://gitlab.com/jimsy/pca9641), an example of how easy it is to write a driver with Wafer.
+
+- [Augie](https://gitlab.com/jimsy/augie), a hexapod robot.
+- [PCA9641](https://gitlab.com/jimsy/pca9641), an example of how easy it is to write a driver with Wafer.
 
 ## Working with registers
 
@@ -113,7 +114,7 @@ end
 
 I've included stub implementations of the parts of `ElixirALE` and `Circuits`
 that are interacted with by this project, so the tests should run and pass on
-machines without physical hardware interfaces.  If you have a Raspberry Pi with
+machines without physical hardware interfaces. If you have a Raspberry Pi with
 a Pi Sense Hat connected you can run the tests with the `SENSE_HAT_PRESENT=true`
 environment variable set and it will perform integration tests with two of the
 sensors on this device.
@@ -135,6 +136,10 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/wafer](https://hexdocs.pm/wafer).
 
+## Gitlab Mirror
+
+This repository is mirrored [on Gitlab](https://gitlab.com/jimsy/wafer) from it's primary location [on my Forgejo instance](https://code.harton.nz/james/smokestack). Feel free to raise issues and open PRs on Gitlab.
+
 ## License
 
 This software is licensed under the terms of the
@@ -142,7 +147,7 @@ This software is licensed under the terms of the
 this package for the terms.
 
 This license actively proscribes this software being used by and for some
-industries, countries and activities.  If your usage of this software doesn't
+industries, countries and activities. If your usage of this software doesn't
 comply with the terms of this license, then [contact me](mailto:james@harton.nz)
 with the details of your use-case to organise the purchase of a license - the
 cost of which may include a donation to a suitable charity or NGO.
