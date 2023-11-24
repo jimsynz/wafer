@@ -1,4 +1,3 @@
-# credo:disable-for-this-file
 defmodule Wafer.Registers do
   @moduledoc """
   This module provides helpful macros for specifying the registers used to
@@ -101,7 +100,7 @@ defmodule Wafer.Registers do
   defmacro defregister(name, register_address, :ro, bytes)
            when is_atom(name) and is_integer(register_address) and register_address >= 0 and
                   is_integer(bytes) and bytes >= 0 do
-    empty_bytes = 1..bytes |> Enum.map(fn _ -> 0 end) |> Enum.join(", ")
+    empty_bytes = 1..bytes |> Enum.map_join(", ", fn _ -> 0 end)
 
     quote do
       @doc """
@@ -121,7 +120,7 @@ defmodule Wafer.Registers do
   defmacro defregister(name, register_address, :wo, bytes)
            when is_atom(name) and is_integer(register_address) and register_address >= 0 and
                   is_integer(bytes) and bytes >= 0 do
-    empty_bytes = 1..bytes |> Enum.map(fn _ -> 0 end) |> Enum.join(", ")
+    empty_bytes = 1..bytes |> Enum.map_join(", ", fn _ -> 0 end)
 
     quote do
       @doc """
@@ -142,10 +141,11 @@ defmodule Wafer.Registers do
     end
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defmacro defregister(name, register_address, :rw, bytes)
            when is_atom(name) and is_integer(register_address) and register_address >= 0 and
                   is_integer(bytes) and bytes >= 0 do
-    empty_bytes = 1..bytes |> Enum.map(fn _ -> 0 end) |> Enum.join(", ")
+    empty_bytes = 1..bytes |> Enum.map_join(", ", fn _ -> 0 end)
     bits = bytes * 8
 
     quote do
@@ -215,8 +215,7 @@ defmodule Wafer.Registers do
                Chip.read_register(conn, unquote(register_address), unquote(bytes)),
              new_data when is_binary(new_data) and byte_size(new_data) == unquote(bytes) <-
                callback.(old_data),
-             {:ok, conn} <- Chip.write_register(conn, unquote(register_address), new_data),
-             do: {:ok, conn}
+             do: Chip.write_register(conn, unquote(register_address), new_data)
       end
 
       def unquote(:"update_#{name}")(_conn, _callback),
