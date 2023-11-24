@@ -42,6 +42,8 @@ defmodule Wafer.MixProject do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
+    devtest = [only: ~w[dev test]a, runtime: false]
+
     [
       {:circuits_gpio, "~> 1.0", optional: true},
       if System.get_env("CI_I2C_1_X") == "true" do
@@ -50,11 +52,14 @@ defmodule Wafer.MixProject do
         {:circuits_i2c, "~> 2.0 or ~> 1.0", optional: true}
       end,
       {:circuits_spi, "~> 1.3", optional: true},
-      {:credo, "~> 1.6", only: ~w[dev test]a, runtime: false},
-      {:earmark, "~> 1.4", only: ~w[dev test]a},
       {:elixir_ale, "~> 1.2", optional: true},
-      {:ex_doc, ">= 0.28.1", only: ~w[dev test]a},
-      {:git_ops, "~> 2.4", only: ~w[dev test]a, runtime: false},
+
+      # Dev/test
+      {:credo, "~> 1.6", devtest},
+      {:earmark, "~> 1.4", devtest},
+      {:ex_check, "~> 0.15", devtest},
+      {:ex_doc, ">= 0.0.0", devtest},
+      {:git_ops, "~> 2.4", devtest},
       {:mimic, "~> 1.5", only: :test}
     ]
   end
