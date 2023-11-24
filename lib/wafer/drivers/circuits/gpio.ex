@@ -57,11 +57,11 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
   import Wafer.Guards
 
   def read(%{ref: ref}) when is_reference(ref) do
-    case(Wrapper.read(ref)) do
+    case Wrapper.read(ref) do
       value when is_pin_value(value) -> {:ok, value}
-      {:error, reason} -> {:error, reason}
-      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
+  rescue
+    error -> {:error, error}
   end
 
   def write(%{ref: ref} = conn, value) when is_reference(ref) and is_pin_value(value) do
@@ -80,11 +80,11 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
 
   def enable_interrupt(conn, pin_condition, metadata \\ nil)
       when is_pin_condition(pin_condition) do
-    with :ok <- Dispatcher.enable(conn, pin_condition, metadata), do: {:ok, conn}
+    Dispatcher.enable(conn, pin_condition, metadata)
   end
 
   def disable_interrupt(conn, pin_condition) when is_pin_condition(pin_condition) do
-    with :ok <- Dispatcher.disable(conn, pin_condition), do: {:ok, conn}
+    Dispatcher.disable(conn, pin_condition)
   end
 
   def pull_mode(%{ref: ref} = conn, mode) when is_reference(ref) and is_pin_pull_mode(mode) do

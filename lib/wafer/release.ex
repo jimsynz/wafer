@@ -30,7 +30,7 @@ defprotocol Wafer.Release do
   Release all resources associated with the connection.  Usually in preparation
   for shutdown.
   """
-  @spec release(Conn.t()) :: :ok
+  @spec release(Conn.t()) :: :ok | {:error, any}
   def release(conn)
 end
 

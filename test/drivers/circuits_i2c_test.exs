@@ -77,7 +77,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:close, 1, fn ref ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         :ok
       end)
 
@@ -91,7 +91,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:write_read, 1, fn ref, addr, data, bytes ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         assert addr == conn.address
         assert data == <<0>>
         assert bytes == 2
@@ -108,7 +108,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:write, 1, fn ref, addr, data ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         assert addr == conn.address
         assert data == <<1, 2, 3>>
         :ok
@@ -124,7 +124,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:write_read, 1, fn ref, addr, data, bytes ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         assert addr == conn.address
         assert data == <<0>>
         assert bytes == 2
@@ -133,7 +133,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:write, 1, fn ref, addr, data ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         assert addr == conn.address
         assert data == <<0, 1, 1>>
         :ok
@@ -149,7 +149,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:read, 1, fn ref, addr, bytes, opts ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         assert addr == conn.address
         assert bytes == 2
         assert opts == []
@@ -166,7 +166,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:write, 1, fn ref, addr, data, opts ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         assert addr == conn.address
         assert data == <<0, 0>>
         assert opts == []
@@ -183,7 +183,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:write_read, 1, fn ref, addr, data, bytes, opts ->
-        assert ref == conn.ref
+        assert ref == conn.conn
         assert addr == conn.address
         assert data == <<1>>
         assert bytes == 2
@@ -202,7 +202,7 @@ defmodule WaferCircuits.I2CTest do
 
       Wrapper
       |> expect(:detect_devices, 1, fn ref ->
-        assert conn.ref == ref
+        assert conn.conn == ref
         [conn.address]
       end)
 
@@ -210,5 +210,5 @@ defmodule WaferCircuits.I2CTest do
     end
   end
 
-  defp conn, do: %Subject{ref: :erlang.make_ref(), bus: "i2c-1", address: 0x13}
+  defp conn, do: %Subject{conn: :erlang.make_ref(), bus: "i2c-1", address: 0x13}
 end

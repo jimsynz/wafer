@@ -115,7 +115,6 @@ defimpl Wafer.I2C, for: Wafer.Driver.ElixirALE.I2C do
     case Wrapper.detect_devices(pid) do
       devices when is_list(devices) -> {:ok, devices}
       {:error, reason} -> {:error, reason}
-      other -> {:error, "Invalid response from driver: #{inspect(other)}"}
     end
   end
 end

@@ -87,7 +87,7 @@ defimpl Wafer.I2C, for: Wafer.Driver.Fake do
     {:ok, <<0::size(bits)>>, conn}
   end
 
-  def detect_devices(_conn), do: []
+  def detect_devices(_conn), do: {:ok, []}
 end
 
 defimpl Wafer.SPI, for: Wafer.Driver.Fake do

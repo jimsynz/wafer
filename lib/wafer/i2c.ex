@@ -63,7 +63,7 @@ defprotocol Wafer.I2C do
   @doc """
   Detect the devices adjacent to the connection's device on the same I2C bus.
   """
-  @spec detect_devices(Conn.t()) :: {:ok, [address]}
+  @spec detect_devices(Conn.t()) :: {:ok, [address]} | {:error, any}
   def detect_devices(conn)
 end
 

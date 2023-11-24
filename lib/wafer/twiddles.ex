@@ -173,7 +173,7 @@ defmodule Wafer.Twiddles do
       iex> find_ones(<<0x0A>>)
       [1, 3]
   """
-  @spec find_ones(byte | single_byte_binary) :: non_neg_integer
+  @spec find_ones(byte | single_byte_binary) :: [non_neg_integer]
   def find_ones(byte) when is_byte(byte) do
     0..7
     |> Enum.filter(&(get_bit(byte, &1) == 1))
@@ -192,7 +192,7 @@ defmodule Wafer.Twiddles do
       iex> find_zeroes(<<0xFA>>)
       [0, 2]
   """
-  @spec find_zeroes(byte | single_byte_binary) :: non_neg_integer
+  @spec find_zeroes(byte | single_byte_binary) :: [non_neg_integer]
   def find_zeroes(byte) when is_byte(byte) do
     0..7
     |> Enum.filter(&(get_bit(byte, &1) == 0))
