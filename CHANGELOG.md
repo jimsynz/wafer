@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.3](https://gitlab.com/jimsy/wafer/compare/v1.0.2...v1.0.3) (2023-11-24)
+
+
+
+
+### Bug Fixes:
+
+* compiler warning in `Wafer.Driver.ElixirALE.I2C.Wrapper.write_read_device/4`.
+
 ## [v1.0.2](https://gitlab.com/jimsy/wafer/compare/v1.0.1...v1.0.2) (2023-08-21)
 
 
