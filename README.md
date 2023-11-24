@@ -1,6 +1,6 @@
 # Wafer
 
-[![pipeline status](https://gitlab.com/jimsy/wafer/badges/main/pipeline.svg)](https://gitlab.com/jimsy/wafer/commits/main)
+[![Build Status](https://drone.harton.nz/api/badges/james/wafer/status.svg?ref=refs/heads/main)](https://drone.harton.nz/james/wafer)
 [![Hex.pm](https://img.shields.io/hexpm/v/wafer.svg)](https://hex.pm/packages/wafer)
 [![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
 
