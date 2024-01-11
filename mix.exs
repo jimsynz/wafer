@@ -53,7 +53,7 @@ defmodule Wafer.MixProject do
     devtest = [only: ~w[dev test]a, runtime: false]
 
     [
-      {:circuits_gpio, "~> 1.0", optional: true},
+      {:circuits_gpio, "~> 2.0", optional: true},
       if System.get_env("CI_I2C_1_X") == "true" do
         {:circuits_i2c, "~> 2.0", optional: true}
       else
