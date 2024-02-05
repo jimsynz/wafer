@@ -19,10 +19,10 @@ defmodule Wafer.MixProject do
       description: @description,
       deps: deps(),
       consolidate_protocols: Mix.env() != :test,
-      source_url: "https://code.harton.nz/james/wafer",
-      homepage_url: "https://code.harton.nz/james/wafer",
+      source_url: "https://harton.dev/james/wafer",
+      homepage_url: "https://harton.dev/james/wafer",
       docs: [
-        source_url_pattern: "https://code.harton.nz/james/wafer/src/branch/main/%{path}#L%{line}",
+        source_url_pattern: "https://harton.dev/james/wafer/src/branch/main/%{path}#L%{line}",
         extras: ["README.md"]
       ]
     ]
@@ -41,10 +41,10 @@ defmodule Wafer.MixProject do
       maintainers: ["James Harton <james@harton.nz>"],
       licenses: ["HL3-FULL"],
       links: %{
-        "Source" => "https://code.harton.nz/james/smokestack",
+        "Source" => "https://harton.dev/james/wafer",
         "Gitlab Mirror" => "https://gitlab.com/jimsy/wafer"
       },
-      source_url: "https://code.harton.nz/james/smokestack"
+      source_url: "https://harton.dev/james/wafer"
     ]
   end
 

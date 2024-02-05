@@ -138,7 +138,7 @@ be found at [https://hexdocs.pm/wafer](https://hexdocs.pm/wafer).
 
 ## Gitlab Mirror
 
-This repository is mirrored [on Gitlab](https://gitlab.com/jimsy/wafer) from it's primary location [on my Forgejo instance](https://code.harton.nz/james/smokestack). Feel free to raise issues and open PRs on Gitlab.
+This repository is mirrored [on Gitlab](https://gitlab.com/jimsy/wafer) from it's primary location [on my Forgejo instance](https://harton.dev/james/smokestack). Feel free to raise issues and open PRs on Gitlab.
 
 ## License
 
