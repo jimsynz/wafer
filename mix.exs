@@ -67,7 +67,7 @@ defmodule Wafer.MixProject do
       {:dialyxir, "~> 1.4", devtest},
       {:doctor, "~> 0.21", devtest},
       {:earmark, "~> 1.4", devtest},
-      {:ex_check, "~> 0.15", devtest},
+      {:ex_check, "~> 0.16", devtest},
       {:ex_doc, ">= 0.0.0", devtest},
       {:git_ops, "~> 2.4", devtest},
       {:mimic, "~> 1.5", only: :test},
