@@ -1,6 +1,6 @@
 # Wafer
 
-[![Build Status](https://drone.harton.nz/api/badges/james/wafer/status.svg?ref=refs/heads/main)](https://drone.harton.nz/james/wafer)
+[![Build Status](https://drone.harton.dev/api/badges/james/wafer/status.svg?ref=refs/heads/main)](https://drone.harton.dev/james/wafer)
 [![Hex.pm](https://img.shields.io/hexpm/v/wafer.svg)](https://hex.pm/packages/wafer)
 [![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
 
@@ -121,8 +121,8 @@ sensors on this device.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `wafer` to your list of dependencies in `mix.exs`:
+Wafer is [available in Hex](https://hex.pm/packages/wafer), the package can be
+installed by adding `wafer` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -132,13 +132,15 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/wafer](https://hexdocs.pm/wafer).
+Documentation for the latest release can be found on
+[HexDocs](https://hexdocs.pm/wafer) and for the `main` branch on
+[docs.harton.nz](https://docs.harton.nz/james/wafer).
 
-## Gitlab Mirror
+## Github Mirror
 
-This repository is mirrored [on Gitlab](https://gitlab.com/jimsy/wafer) from it's primary location [on my Forgejo instance](https://harton.dev/james/smokestack). Feel free to raise issues and open PRs on Gitlab.
+This repository is mirrored [on Github](https://github.com/jimsynz/ease)
+from it's primary location [on my Forejo instance](https://harton.dev/james/ease).
+Feel free to raise issues and open PRs on Github.
 
 ## License
 

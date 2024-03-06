@@ -23,7 +23,7 @@ defmodule Wafer.MixProject do
       homepage_url: "https://harton.dev/james/wafer",
       docs: [
         source_url_pattern: "https://harton.dev/james/wafer/src/branch/main/%{path}#L%{line}",
-        extras: ["README.md"]
+        extras: ["README.md", "CHANGELOG.md"]
       ]
     ]
   end
@@ -42,7 +42,9 @@ defmodule Wafer.MixProject do
       licenses: ["HL3-FULL"],
       links: %{
         "Source" => "https://harton.dev/james/wafer",
-        "Gitlab Mirror" => "https://gitlab.com/jimsy/wafer"
+        "GitHub" => "https://github.com/jimsynz/wafer",
+        "Changelog" => "https://docs.harton.nz/james/wafer/changelog.html",
+        "Sponsor" => "https://github.com/sponsors/jimsynz"
       },
       source_url: "https://harton.dev/james/wafer"
     ]
