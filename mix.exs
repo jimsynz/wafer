@@ -59,7 +59,7 @@ defmodule Wafer.MixProject do
       if System.get_env("CI_I2C_1_X") == "true" do
         {:circuits_i2c, "~> 2.0", optional: true}
       else
-        {:circuits_i2c, "~> 2.0 or ~> 1.0", optional: true}
+        {:circuits_i2c, "< 3.0.0", optional: true}
       end,
       {:circuits_spi, "~> 2.0 or ~> 1.3", optional: true},
       {:elixir_ale, "~> 1.2", optional: true},
