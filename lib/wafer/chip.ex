@@ -52,7 +52,7 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirALE.I2C.acquire(bus: "i2c-1", address: 0x68)
+      iex> {:ok, conn} = Circuits.I2C.acquire(bus: "i2c-1", address: 0x68)
       ...> Chip.read_register(conn, 0, 1)
       {:ok, <<0>>}
   """
@@ -71,7 +71,7 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirALE.I2C.acquire(bus: "i2c", address: 0x68)
+      iex> {:ok, conn} = Circuits.I2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.write_register(conn, 0, <<0>>)
       {:ok, conn}
   """
@@ -88,7 +88,7 @@ defprotocol Wafer.Chip do
 
     - `conn` a type which implements the `Wafer.Conn` behaviour.
     - `register_address` the address of the register to swap.
-    - `new_data` the data to write to the regsiter.
+    - `new_data` the data to write to the register.
 
   ## Returns
 
@@ -96,7 +96,7 @@ defprotocol Wafer.Chip do
 
   ## Example
 
-      iex> {:ok, conn} = ElixirALE.I2C.acquire(bus: "i2c", address: 0x68)
+      iex> {:ok, conn} = Circuits.I2C.acquire(bus: "i2c", address: 0x68)
       ...> Chip.swap_register(conn, 0, <<1>>)
       {:ok, <<0>>, conn}
   """

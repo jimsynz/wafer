@@ -6,8 +6,8 @@ defprotocol Wafer.I2C do
   want to use the `Chip` protocol for working with registers, but this is
   provided for consistency's sake.
 
-  This API is extremely similar to the `ElixirALE.I2C` and `Circuits.I2C` APIs,
-  except that it takes a `Conn` which implements `I2C` as an argument.
+  This API is extremely similar to the `Circuits.I2C` APIs, except that it takes
+  a `Conn` which implements `I2C` as an argument.
 
   ## Deriving
 

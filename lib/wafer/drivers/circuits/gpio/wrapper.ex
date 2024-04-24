@@ -5,13 +5,13 @@ defmodule Wafer.Driver.Circuits.GPIO.Wrapper do
   defdelegate close(gpio), to: Circuits.GPIO
 
   @compile {:no_warn_undefined, Circuits.GPIO}
-  defdelegate info(), to: Circuits.GPIO
+  defdelegate backend_info(gpio \\ nil), to: Circuits.GPIO
 
   @compile {:no_warn_undefined, Circuits.GPIO}
   defdelegate open(pin_number, pin_direction, options \\ []), to: Circuits.GPIO
 
   @compile {:no_warn_undefined, Circuits.GPIO}
-  defdelegate pin(gpio), to: Circuits.GPIO
+  defdelegate identifiers(gpio), to: Circuits.GPIO
 
   @compile {:no_warn_undefined, Circuits.GPIO}
   defdelegate read(gpio), to: Circuits.GPIO

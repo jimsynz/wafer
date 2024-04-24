@@ -62,7 +62,6 @@ defmodule Wafer.MixProject do
         {:circuits_i2c, "< 3.0.0", optional: true}
       end,
       {:circuits_spi, "< 3.0.0", optional: true},
-      {:elixir_ale, "~> 1.2", optional: true},
 
       # Dev/test
       {:credo, "~> 1.6", devtest},

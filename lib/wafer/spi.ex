@@ -4,10 +4,10 @@ defprotocol Wafer.SPI do
   @moduledoc """
   A (very simple) protocol for interacting with SPI connected devices.
 
-  This API is a minimal version of the `ElixirALE.SPI` and `Circuits.SPI` APIs,
-  except that it takes a `Conn` which implements `SPI` as an argument.  If you
-  want to use any advanced features, such as bus detection, I advise you to
-  interact with the underlying driver directly.
+  This API is a minimal version of the `Circuits.SPI` APIs, except that it takes
+  a `Conn` which implements `SPI` as an argument.  If you want to use any
+  advanced features, such as bus detection, I advise you to interact with the
+  underlying driver directly.
 
   ## Deriving
 

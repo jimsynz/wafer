@@ -88,7 +88,7 @@ defmodule Wafer.Registers do
       when is_function(callback, 1) do
         with {:ok, data} <- Chip.read_register(conn, 0x01, 1),
              new_data when is_binary(new_data) and byte_size(new_data) == 1 <- callback.(data),
-             {:ok, conn} <- Chip.write_regsiter(conn, 0x01, new_data),
+             {:ok, conn} <- Chip.write_register(conn, 0x01, new_data),
              do: {:ok, conn}
       end
 

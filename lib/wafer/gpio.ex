@@ -68,13 +68,12 @@ defprotocol Wafer.GPIO do
   Interrupts will be sent to the calling process as messages in the form of
   `{:interrupt, Conn.t(), pin_condition, metadata | nil}`.
 
-  ## Implementors note
+  ## Implementers note
 
   `Wafer` starts it's own `Registry` named `Wafer.InterruptRegistry` which you
   can use to publish your interrupts to using the above format.  The registry
   key is set as follows: `{PublishingModule, pin, pin_condition}`.  You can see
-  examples in the `Circuits.GPIO.Dispatcher` and `ElixirALE.GPIO.Dispatcher`
-  modules.
+  examples in the `Circuits.GPIO.Dispatcher` module.
   """
   @spec enable_interrupt(Conn.t(), pin_condition, any) ::
           {:ok, Conn.t()} | {:error, reason :: any}
