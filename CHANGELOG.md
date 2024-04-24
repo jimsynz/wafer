@@ -5,6 +5,13 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.1.0](https://gitlab.com/jimsy/wafer/compare/v1.0.4...v1.1.0) (2024-04-24)
+### Breaking Changes:
+
+* Remove ElixirALE support. (#67)
+
+
+
 ## [v1.0.4](https://gitlab.com/jimsy/wafer/compare/v1.0.3...v1.0.4) (2024-04-24)
 
 
