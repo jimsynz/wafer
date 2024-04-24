@@ -127,7 +127,7 @@ installed by adding `wafer` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:wafer, "~> 1.0.3"}
+    {:wafer, "~> 1.0.4"}
   ]
 end
 ```
