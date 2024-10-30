@@ -66,7 +66,7 @@ defmodule Wafer.MixProject do
       # Dev/test
       {:credo, "~> 1.6", devtest},
       {:dialyxir, "~> 1.4", devtest},
-      {:doctor, "~> 0.21", devtest},
+      {:doctor, "~> 0.22", devtest},
       {:earmark, "~> 1.4", devtest},
       {:ex_check, "~> 0.16", devtest},
       {:ex_doc, ">= 0.0.0", devtest},
