@@ -70,7 +70,7 @@ defmodule Wafer.MixProject do
       {:ex_check, "~> 0.16", devtest},
       {:ex_doc, ">= 0.0.0", devtest},
       {:git_ops, "~> 2.4", devtest},
-      {:mimic, "~> 2.0", only: :test},
+      {:mimic, "~> 1.12", only: :test},
       {:mix_audit, "~> 2.1", devtest}
     ]
   end
