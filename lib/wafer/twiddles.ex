@@ -48,7 +48,7 @@ defmodule Wafer.Twiddles do
   """
   @spec clear_bit(byte | single_byte_binary, bit_number) :: byte
   def clear_bit(byte, bit_number) when is_byte(byte) and is_bit_number(bit_number),
-    do: byte &&& ~~~(1 <<< bit_number)
+    do: byte &&& bnot(1 <<< bit_number)
 
   def clear_bit(<<byte>>, bit_number), do: <<clear_bit(byte, bit_number)>>
 
