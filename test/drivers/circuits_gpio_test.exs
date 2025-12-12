@@ -138,7 +138,12 @@ defmodule WaferDriverCircuits.GPIOTest do
     end
   end
 
-  defp conn(opts \\ []), do: struct(%Subject{pin: pin(), ref: :erlang.make_ref()}, opts)
+  defp conn(opts \\ []),
+    do:
+      struct(
+        %Subject{pin: pin(), ref: %{__struct__: Circuits.GPIO.CDev, ref: :erlang.make_ref()}},
+        opts
+      )
 
   defp pin, do: 1
 end

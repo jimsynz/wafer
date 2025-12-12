@@ -48,7 +48,7 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
         _from,
         state
       )
-      when is_pin_condition(pin_condition) and is_reference(ref) and is_pin_number(pin) do
+      when is_pin_condition(pin_condition) and is_pin_number(pin) do
     case Wrapper.set_interrupts(ref, pin_condition) do
       :ok -> {:reply, {:ok, conn}, state}
       {:error, reason} -> {:reply, {:error, reason}, state}

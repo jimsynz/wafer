@@ -169,7 +169,13 @@ defmodule WaferDriverCircuits.GPIO.DispatcherTest do
     end
   end
 
-  defp conn(opts \\ []), do: Enum.into(opts, %{pin: pin(), ref: :erlang.make_ref()})
+  defp conn(opts \\ []),
+    do:
+      Enum.into(opts, %{
+        pin: pin(),
+        ref: %{__struct__: Circuits.GPIO.CDev, ref: :erlang.make_ref()}
+      })
+
   defp state(opts \\ []), do: Enum.into(opts, %{values: %{}})
   defp pin, do: 1
 end

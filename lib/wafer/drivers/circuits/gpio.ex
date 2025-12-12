@@ -48,7 +48,7 @@ defimpl Wafer.Release, for: Wafer.Driver.Circuits.GPIO do
   Note that other connections may still be using the pin.
   """
   @spec release(GPIO.t()) :: :ok | {:error, reason :: any}
-  def release(%GPIO{ref: ref} = _conn) when is_reference(ref), do: Wrapper.close(ref)
+  def release(%GPIO{ref: ref} = _conn), do: Wrapper.close(ref)
 end
 
 defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
@@ -56,7 +56,7 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
   alias Wafer.Driver.Circuits.GPIO.Wrapper
   import Wafer.Guards
 
-  def read(%{ref: ref}) when is_reference(ref) do
+  def read(%{ref: ref}) do
     case Wrapper.read(ref) do
       value when is_pin_value(value) -> {:ok, value}
     end
@@ -64,15 +64,14 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
     error -> {:error, error}
   end
 
-  def write(%{ref: ref} = conn, value) when is_reference(ref) and is_pin_value(value) do
+  def write(%{ref: ref} = conn, value) when is_pin_value(value) do
     with :ok <- Wrapper.write(ref, value), do: {:ok, conn}
   end
 
   def direction(%{direction: :in} = conn, :in), do: {:ok, conn}
   def direction(%{direction: :out} = conn, :out), do: {:ok, conn}
 
-  def direction(%{ref: ref} = conn, direction)
-      when is_reference(ref) and is_pin_direction(direction) do
+  def direction(%{ref: ref} = conn, direction) when is_pin_direction(direction) do
     with pin_dir <- translate_pin_direction(direction),
          :ok <- Wrapper.set_direction(ref, pin_dir),
          do: {:ok, %{conn | direction: direction}}
@@ -87,7 +86,7 @@ defimpl Wafer.GPIO, for: Wafer.Driver.Circuits.GPIO do
     Dispatcher.disable(conn, pin_condition)
   end
 
-  def pull_mode(%{ref: ref} = conn, mode) when is_reference(ref) and is_pin_pull_mode(mode) do
+  def pull_mode(%{ref: ref} = conn, mode) when is_pin_pull_mode(mode) do
     with :ok <- Wrapper.set_pull_mode(ref, mode), do: {:ok, conn}
   end
 
