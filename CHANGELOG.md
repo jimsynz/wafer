@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.1.1](https://gitlab.com/jimsy/wafer/compare/v1.1.0...v1.1.1) (2025-12-12)
+
+
+
+
+### Bug Fixes:
+
+* remove `is_reference` guards for circuits_gpio 2.x compatibility
+
 ## [v1.1.0](https://gitlab.com/jimsy/wafer/compare/v1.0.4...v1.1.0) (2024-04-24)
 ### Breaking Changes:
 
