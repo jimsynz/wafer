@@ -1,6 +1,5 @@
 # Wafer
 
-[![Build Status](https://drone.harton.dev/api/badges/james/wafer/status.svg?ref=refs/heads/main)](https://drone.harton.dev/james/wafer)
 [![Hex.pm](https://img.shields.io/hexpm/v/wafer.svg)](https://hex.pm/packages/wafer)
 [![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
 
@@ -9,8 +8,6 @@ Wafer is an OTP application that assists with writing drivers for peripherals us
 Wafer provides Elixir protocols for interacting with device registers and dealing with GPIO, so that you can use directly connected hardware GPIO pins or GPIO expanders such as the [MCP23008](https://www.microchip.com/wwwproducts/en/MCP23008) or the [CD74HC595](http://www.ti.com/product/CD74HC595) SPI shift register.
 
 Wafer implements the [GPIO](https://hexdocs.pm/wafer/Wafer.GPIOProto.html) and [Chip](https://hexdocs.pm/wafer/Wafer.Chip.html) protocols for [Circuits.GPIO](https://hex.pm/packages/circuits_gpio) and [Circuits.I2C](https://hex.pm/packages/circuits_i2c). Implementing it for SPI should also be trivial, I just don't have any SPI devices to test with at the moment.
-
-Documentation for the main branch can always be found [here](https://docs.harton.nz/james/wafer/).
 
 Some examples of how to use this project:
 
@@ -133,8 +130,7 @@ end
 ```
 
 Documentation for the latest release can be found on
-[HexDocs](https://hexdocs.pm/wafer) and for the `main` branch on
-[docs.harton.nz](https://docs.harton.nz/james/wafer).
+[HexDocs](https://hexdocs.pm/wafer).
 
 ## Github Mirror
 
