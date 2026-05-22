@@ -71,9 +71,11 @@ defprotocol Wafer.GPIO do
   ## Implementers note
 
   `Wafer` starts it's own `Registry` named `Wafer.InterruptRegistry` which you
-  can use to publish your interrupts to using the above format.  The registry
-  key is set as follows: `{PublishingModule, pin, pin_condition}`.  You can see
-  examples in the `Circuits.GPIO.Dispatcher` module.
+  can use to publish your interrupts to subscribers.  See
+  `Wafer.InterruptRegistry` for the subscribe/publish API; the `key` you
+  publish under is up to you (a `{PublishingModule, pin}` tuple is
+  conventional).  You can see an example in
+  `Wafer.Driver.Circuits.GPIO.Dispatcher`.
   """
   @spec enable_interrupt(Conn.t(), pin_condition, any) ::
           {:ok, Conn.t()} | {:error, reason :: any}

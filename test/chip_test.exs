@@ -4,7 +4,6 @@ defmodule WaferChipTest do
   alias Wafer.Chip.Wafer.Driver.Circuits.I2C, as: Impl
   alias Wafer.Driver.Circuits.I2C, as: Driver
   import Mimic
-  Code.require_file("test/support/test_utils.exs")
   @moduledoc false
 
   setup do
@@ -70,7 +69,7 @@ defmodule WaferChipTest do
   end
 
   defp test_mod(key \\ :conn) do
-    mod = TestUtils.random_module_name()
+    mod = Wafer.TestUtils.random_module_name()
 
     if key == :conn do
       defmodule mod do

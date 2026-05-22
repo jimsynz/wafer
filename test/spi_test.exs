@@ -4,7 +4,6 @@ defmodule WaferSPITest do
   alias Wafer.SPI
   alias Wafer.SPI.Wafer.Driver.Circuits.SPI, as: Impl
   import Mimic
-  Code.require_file("test/support/test_utils.exs")
   @moduledoc false
 
   setup do
@@ -39,7 +38,7 @@ defmodule WaferSPITest do
   end
 
   defp test_mod(key \\ :conn) do
-    mod = TestUtils.random_module_name()
+    mod = Wafer.TestUtils.random_module_name()
 
     if key == :conn do
       defmodule mod do

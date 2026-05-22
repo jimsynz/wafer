@@ -2,7 +2,6 @@ defmodule WaferRegistersTest do
   use ExUnit.Case, async: true
   use Mimic
   alias Wafer.Chip
-  Code.require_file("test/support/test_utils.exs")
 
   describe "read-only register" do
     test "the register read function is defined" do
@@ -139,7 +138,7 @@ defmodule WaferRegistersTest do
   end
 
   defp test_mod do
-    mod = TestUtils.random_module_name()
+    mod = Wafer.TestUtils.random_module_name()
 
     defmodule mod do
       use Wafer.Registers

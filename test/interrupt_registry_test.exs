@@ -35,48 +35,57 @@ defmodule WaferInterruptRegistryTest do
   end
 
   describe "subscriptions/1" do
-    test "lists all subscriptions for `key`" do
+    test "lists all subscriptions for `key`, with `:both` counted as one rising and one falling" do
+      receiver = self()
+      :ok = IR.subscribe(:key, :rising, :conn, :metadata)
+      :ok = IR.subscribe(:key, :falling, :conn, :metadata)
+      :ok = IR.subscribe(:key, :both, :conn, :metadata)
+
+      subscriptions = IR.subscriptions(:key)
+
+      assert length(subscriptions) == 4
+
+      assert Enum.count(subscriptions, fn {condition, _, _, ^receiver} ->
+               condition == :rising
+             end) == 2
+
+      assert Enum.count(subscriptions, fn {condition, _, _, ^receiver} ->
+               condition == :falling
+             end) == 2
+    end
+  end
+
+  describe "subscriptions/2" do
+    test "lists all subscriptions for `key` and `pin_condition`, including `:both` subscribers" do
       receiver = self()
       :ok = IR.subscribe(:key, :rising, :conn, :metadata)
       :ok = IR.subscribe(:key, :falling, :conn, :metadata)
       :ok = IR.subscribe(:key, :both, :conn, :metadata)
 
       assert [
-               {:rising, :conn, :metadata, ^receiver},
                {:falling, :conn, :metadata, ^receiver},
-               {:both, :conn, :metadata, ^receiver}
-             ] = IR.subscriptions(:key)
-    end
-  end
-
-  describe "subscriptions/2" do
-    test "lists all subscriptions for `key` and `pin_condition`" do
-      receiver = self()
-      :ok = IR.subscribe(:key, :rising, :conn, :metadata)
-      :ok = IR.subscribe(:key, :falling, :conn, :metadata)
-      :ok = IR.subscribe(:key, :both, :conn, :metadata)
-
-      assert [{:falling, :conn, :metadata, ^receiver}] = IR.subscriptions(:key, :falling)
+               {:falling, :conn, :metadata, ^receiver}
+             ] = IR.subscriptions(:key, :falling)
     end
   end
 
   describe "count_subscriptions/1" do
-    test "returns the number of subscriptions for `key`" do
+    test "returns the number of subscriptions for `key`, counting `:both` twice" do
       :ok = IR.subscribe(:key, :rising, :conn, :metadata)
       :ok = IR.subscribe(:key, :falling, :conn, :metadata)
       :ok = IR.subscribe(:key, :both, :conn, :metadata)
 
-      assert 3 = IR.count_subscriptions(:key)
+      assert 4 = IR.count_subscriptions(:key)
     end
   end
 
   describe "count_subscriptions/2" do
-    test "returns the number of subscriptions for `key`" do
+    test "returns the number of subscriptions for `key` and `pin_condition`" do
       :ok = IR.subscribe(:key, :rising, :conn, :metadata)
       :ok = IR.subscribe(:key, :falling, :conn, :metadata)
       :ok = IR.subscribe(:key, :both, :conn, :metadata)
 
-      assert 1 = IR.count_subscriptions(:key, :falling)
+      assert 2 = IR.count_subscriptions(:key, :falling)
     end
   end
 

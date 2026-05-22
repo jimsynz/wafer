@@ -1,6 +1,6 @@
 %Doctor.Config{
   ignore_modules: [Wafer.Registers],
-  ignore_paths: [],
+  ignore_paths: [~r{^test/}],
   min_module_doc_coverage: 40,
   min_module_spec_coverage: 0,
   min_overall_doc_coverage: 50,
