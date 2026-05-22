@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.1.2](https://gitlab.com/jimsy/wafer/compare/v1.1.1...v1.1.2) (2026-05-22)
+
+
+
+
+### Improvements:
+
+* fix correctness bugs in GPIO interrupt dispatcher (#194) by James Harton
+
 ## [v1.1.1](https://gitlab.com/jimsy/wafer/compare/v1.1.0...v1.1.1) (2025-12-12)
 
 
