@@ -4,6 +4,7 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
   alias Wafer.Driver.Circuits.GPIO.Wrapper
   alias Wafer.{Conn, GPIO, InterruptRegistry}
   import Wafer.Guards
+  require Logger
 
   @moduledoc """
   This module implements a simple dispatcher for GPIO interrupts when using
@@ -18,6 +19,15 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
   edge on each ref and arms the hardware with the union.  Sequential calls of
   `enable(conn, :rising)` and `enable(conn, :falling)` therefore leave the
   ref armed for `:both`, not just the last-requested edge.
+
+  ## Backends that emit a different `gpio_spec` form than was passed to `open/3`
+
+  `Circuits.GPIO` documents that the `gpio_spec` element of an interrupt
+  message equals the spec passed to `open/3`, but some backends (for example
+  `circuits_ft232h`'s GPIO poller) emit a different normalised form. The
+  dispatcher learns every spec form a `ref` may appear under at enable time —
+  by consulting `Circuits.GPIO.identifiers/1` — so interrupts are matched
+  back to the originating `conn` regardless of which form the backend chose.
   """
 
   @doc false
@@ -57,40 +67,61 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
   end
 
   @impl true
-  def init(_opts), do: {:ok, %{values: %{}, triggers: %{}}}
+  def init(_opts),
+    do: {:ok, %{values: %{}, triggers: %{}, ref_by_spec: %{}, pin_by_ref: %{}}}
 
   @impl true
   def handle_call(
         {:enable, %{pin: pin, ref: ref} = conn, pin_condition},
         _from,
-        %{values: values, triggers: triggers} = state
+        state
       )
-      when is_pin_condition(pin_condition) and is_pin_number(pin) do
-    values = Map.put_new_lazy(values, pin, fn -> Wrapper.read(ref) end)
-    triggers = adjust_triggers(triggers, ref, pin_condition, +1)
+      when is_pin_condition(pin_condition) do
+    values = Map.put_new_lazy(state.values, ref, fn -> Wrapper.read(ref) end)
+    triggers = adjust_triggers(state.triggers, ref, pin_condition, +1)
+    ref_by_spec = learn_aliases(state.ref_by_spec, pin, ref)
+    pin_by_ref = Map.put(state.pin_by_ref, ref, pin)
 
     case Wrapper.set_interrupts(ref, hw_trigger(triggers, ref)) do
-      :ok -> {:reply, {:ok, conn}, %{state | values: values, triggers: triggers}}
-      {:error, reason} -> {:reply, {:error, reason}, state}
+      :ok ->
+        {:reply, {:ok, conn},
+         %{
+           state
+           | values: values,
+             triggers: triggers,
+             ref_by_spec: ref_by_spec,
+             pin_by_ref: pin_by_ref
+         }}
+
+      {:error, reason} ->
+        {:reply, {:error, reason}, state}
     end
   end
 
   def handle_call(
         {:disable, %{pin: pin, ref: ref} = conn, pin_condition},
         _from,
-        %{values: values, triggers: triggers} = state
+        state
       )
-      when is_pin_number(pin) and is_pin_condition(pin_condition) do
-    triggers = adjust_triggers(triggers, ref, pin_condition, -1)
+      when is_pin_condition(pin_condition) do
+    triggers = adjust_triggers(state.triggers, ref, pin_condition, -1)
 
     case Wrapper.set_interrupts(ref, hw_trigger(triggers, ref)) do
       :ok ->
-        values =
-          if InterruptRegistry.subscribers?(key(pin)),
-            do: values,
-            else: Map.delete(values, pin)
+        new_state =
+          if InterruptRegistry.subscribers?(key(pin)) do
+            %{state | triggers: triggers}
+          else
+            %{
+              state
+              | triggers: triggers,
+                values: Map.delete(state.values, ref),
+                pin_by_ref: Map.delete(state.pin_by_ref, ref),
+                ref_by_spec: drop_aliases_for(state.ref_by_spec, ref)
+            }
+          end
 
-        {:reply, {:ok, conn}, %{state | values: values, triggers: triggers}}
+        {:reply, {:ok, conn}, new_state}
 
       {:error, reason} ->
         {:reply, {:error, reason}, state}
@@ -98,15 +129,26 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
   end
 
   @impl true
-  def handle_info(
-        {:circuits_gpio, pin, _timestamp, value},
-        %{values: values} = state
-      )
-      when is_pin_number(pin) and is_pin_value(value) do
-    last_value = Map.get(values, pin)
-    maybe_publish(key(pin), last_value, value)
-    {:noreply, %{state | values: Map.put(values, pin, value)}}
+  def handle_info({:circuits_gpio, spec, _timestamp, value}, state)
+      when is_pin_value(value) do
+    case Map.fetch(state.ref_by_spec, spec) do
+      {:ok, ref} ->
+        pin = Map.fetch!(state.pin_by_ref, ref)
+        last_value = Map.get(state.values, ref)
+        maybe_publish(key(pin), last_value, value)
+        {:noreply, %{state | values: Map.put(state.values, ref, value)}}
+
+      :error ->
+        Logger.debug(fn ->
+          "Wafer.Driver.Circuits.GPIO.Dispatcher: ignoring interrupt for unknown gpio_spec " <>
+            inspect(spec)
+        end)
+
+        {:noreply, state}
+    end
   end
+
+  def handle_info(_message, state), do: {:noreply, state}
 
   defp key(pin), do: {__MODULE__, pin}
 
@@ -142,5 +184,49 @@ defmodule Wafer.Driver.Circuits.GPIO.Dispatcher do
       %{falling: f} when f > 0 -> :falling
       _ -> :none
     end
+  end
+
+  defp learn_aliases(ref_by_spec, pin, ref) do
+    pin
+    |> spec_aliases()
+    |> Enum.reduce(ref_by_spec, &Map.put(&2, &1, ref))
+  end
+
+  defp spec_aliases(pin) do
+    extras =
+      case safe_identifiers(pin) do
+        {:ok, %{} = identifiers} ->
+          [
+            Map.get(identifiers, :location),
+            Map.get(identifiers, :label),
+            with c when not is_nil(c) <- Map.get(identifiers, :controller),
+                 l when not is_nil(l) <- Map.get(identifiers, :label) do
+              {c, l}
+            else
+              _ -> nil
+            end
+          ]
+
+        _ ->
+          []
+      end
+
+    [pin | extras]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
+  end
+
+  defp safe_identifiers(pin) do
+    Wrapper.identifiers(pin)
+  rescue
+    _ -> :error
+  catch
+    _, _ -> :error
+  end
+
+  defp drop_aliases_for(ref_by_spec, ref) do
+    ref_by_spec
+    |> Enum.reject(fn {_spec, r} -> r == ref end)
+    |> Map.new()
   end
 end
