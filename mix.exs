@@ -7,7 +7,7 @@ defmodule Wafer.MixProject do
   peripherals and interacting with GPIO pins easier.
   """
 
-  @version "1.1.2"
+  @version "1.1.3"
 
   def project do
     [
@@ -43,7 +43,7 @@ defmodule Wafer.MixProject do
   def package do
     [
       maintainers: ["James Harton <james@harton.nz>"],
-      licenses: ["HL3-FULL"],
+      licenses: [],
       links: %{
         "Source" => "https://harton.dev/james/wafer",
         "GitHub" => "https://github.com/jimsynz/wafer",

@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.1.3](https://gitlab.com/jimsy/wafer/compare/v1.1.2...v1.1.3) (2026-05-25)
+
+
+
+
+### Improvements:
+
+* dispatcher accepts non-integer gpio_specs (#196) by James Harton
+
 ## [v1.1.2](https://gitlab.com/jimsy/wafer/compare/v1.1.1...v1.1.2) (2026-05-22)
 
 
