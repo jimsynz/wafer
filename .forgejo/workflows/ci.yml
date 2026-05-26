@@ -9,9 +9,41 @@ on:
 jobs:
   ci:
     uses: https://harton.dev/james/workflows/.forgejo/workflows/elixir-lib.yml@main
-    runs-on: sense-hat
-    environment:
-      SENSE_HAT_PRESENT: true
     with:
       hex_release_enabled: true
     secrets: inherit
+
+  resolve-versions:
+    runs-on: docker
+    container:
+      image: harton.dev/james/workflows/ci-base:latest
+    outputs:
+      ci_image: ${{ steps.versions.outputs.ci_image }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: versions
+        run: |
+          elixir=$(awk '/^elixir / {print $2}' .tool-versions)
+          erlang=$(awk '/^erlang / {print $2}' .tool-versions)
+          elixir_tag="${elixir%-otp-*}"
+          echo "ci_image=harton.dev/james/workflows/elixir:${elixir_tag}-erlang-${erlang}" >> "$GITHUB_OUTPUT"
+
+  sense-hat:
+    needs: resolve-versions
+    runs-on: sense-hat
+    container:
+      image: ${{ needs.resolve-versions.outputs.ci_image }}
+      options: --device /dev/i2c-1
+    env:
+      SENSE_HAT_PRESENT: "true"
+      MIX_ENV: test
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
+          mix deps.compile
+      - name: Acceptance tests
+        run: mix test test/acceptance/circuits_i2c_device_test.exs
