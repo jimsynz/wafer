@@ -8,6 +8,7 @@ on:
 
 jobs:
   ci:
+    runs-on: docker
     uses: https://harton.dev/james/workflows/.forgejo/workflows/elixir-lib.yml@main
     with:
       hex_release_enabled: true
