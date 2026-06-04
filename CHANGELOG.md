@@ -5,6 +5,19 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.1.4](https://gitlab.com/jimsy/wafer/compare/v1.1.3...v1.1.4) (2026-06-04)
+
+
+
+
+### Bug Fixes:
+
+* resolve Elixir 1.20 protocol default-argument deprecation warnings by James Harton
+
+* ci: add `runs-on: docker` to reusable workflow caller by James Harton
+
+* ci: split sense-hat hardware test into its own job by James Harton
+
 ## [v1.1.3](https://gitlab.com/jimsy/wafer/compare/v1.1.2...v1.1.3) (2026-05-25)
 
 
