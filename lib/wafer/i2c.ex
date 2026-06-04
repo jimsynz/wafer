@@ -29,6 +29,7 @@ defprotocol Wafer.I2C do
     @derive {Wafer.I2C, key: :i2c_conn}
     defstruct [:i2c_conn]
   end
+  ```
   """
 
   @type address :: 0..0x7F
@@ -42,23 +43,42 @@ defprotocol Wafer.I2C do
   @doc """
   Initiate a read transaction to the connection's I2C device.
   """
+  @spec read(Conn.t(), non_neg_integer) :: {:ok, data} | {:error, reason :: any}
+  def read(conn, bytes_to_read)
+
+  @doc """
+  Initiate a read transaction to the connection's I2C device with options.
+  """
   @spec read(Conn.t(), non_neg_integer, options) ::
           {:ok, data} | {:error, reason :: any}
-  def read(conn, bytes_to_read, options \\ [])
+  def read(conn, bytes_to_read, options)
 
   @doc """
   Write `data` to the connection's I2C device.
   """
+  @spec write(Conn.t(), data) :: {:ok, Conn.t()} | {:error, reason :: any}
+  def write(conn, data)
+
+  @doc """
+  Write `data` to the connection's I2C device with options.
+  """
   @spec write(Conn.t(), data, options) ::
           {:ok, Conn.t()} | {:error, reason :: any}
-  def write(conn, data, options \\ [])
+  def write(conn, data, options)
 
   @doc """
   Write data to an I2C device and then immediately issue a read.
   """
+  @spec write_read(Conn.t(), data, non_neg_integer) ::
+          {:ok, data, Conn.t()} | {:error, reason :: any}
+  def write_read(conn, data, bytes_to_read)
+
+  @doc """
+  Write data to an I2C device and then immediately issue a read, with options.
+  """
   @spec write_read(Conn.t(), data, non_neg_integer, options) ::
           {:ok, data, Conn.t()} | {:error, reason :: any}
-  def write_read(conn, data, bytes_to_read, options \\ [])
+  def write_read(conn, data, bytes_to_read, options)
 
   @doc """
   Detect the devices adjacent to the connection's device on the same I2C bus.

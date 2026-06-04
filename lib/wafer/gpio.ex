@@ -77,9 +77,17 @@ defprotocol Wafer.GPIO do
   conventional).  You can see an example in
   `Wafer.Driver.Circuits.GPIO.Dispatcher`.
   """
+  @spec enable_interrupt(Conn.t(), pin_condition) ::
+          {:ok, Conn.t()} | {:error, reason :: any}
+  def enable_interrupt(conn, pin_condition)
+
+  @doc """
+  Enable an interrupt for this connection and pin_condition, passing `metadata`
+  to be received along with the interrupt messages.
+  """
   @spec enable_interrupt(Conn.t(), pin_condition, any) ::
           {:ok, Conn.t()} | {:error, reason :: any}
-  def enable_interrupt(conn, pin_condition, metadata \\ nil)
+  def enable_interrupt(conn, pin_condition, metadata)
 
   @doc """
   Disables interrupts for this connection and pin_condition.
