@@ -22,7 +22,7 @@ jobs:
     outputs:
       ci_image: ${{ steps.versions.outputs.ci_image }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - id: versions
         run: |
           elixir=$(awk '/^elixir / {print $2}' .tool-versions)
@@ -40,7 +40,7 @@ jobs:
       SENSE_HAT_PRESENT: "true"
       MIX_ENV: test
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Build
         run: |
           mix local.hex --force
